@@ -1,4 +1,4 @@
-package es.deusto.miv.ninjashadow.game;
+package es.deusto.miv.ninjakai.game;
 
 public class MainActivity {
 
