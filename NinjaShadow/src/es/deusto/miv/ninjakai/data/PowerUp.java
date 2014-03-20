@@ -1,4 +1,4 @@
-package es.deusto.miv.ninjashadow.data;
+package es.deusto.miv.ninjakai.data;
 
 public class PowerUp {
 
