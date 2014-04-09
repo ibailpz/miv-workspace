@@ -3,7 +3,7 @@ package es.deusto.miv.ninjakai.scene;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
-public class ArmoryScene extends BaseScene {
+public class SettingsScene extends BaseScene {
 
 	@Override
 	public void createScene() {
@@ -19,7 +19,7 @@ public class ArmoryScene extends BaseScene {
 
 	@Override
 	public SceneType getSceneType() {
-		return SceneType.SCENE_ARMORY;
+		return SceneType.SCENE_SETTINGS;
 	}
 
 	@Override

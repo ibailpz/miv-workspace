@@ -30,10 +30,11 @@ public class GameActivity extends BaseGameActivity
 	
 	public EngineOptions onCreateEngineOptions()
 	{
+		//TODO Set current device screen size
 		camera = new BoundCamera(0, 0, 800, 480);
 		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), this.camera);
 		engineOptions.getAudioOptions().setNeedsMusic(true).setNeedsSound(true);
-		//engineOptions.getRenderOptions().getConfigChooserOptions().setRequestedMultiSampling(true);
+		engineOptions.getRenderOptions().setMultiSampling(true);
 		engineOptions.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
 		return engineOptions;
 	}
@@ -57,6 +58,7 @@ public class GameActivity extends BaseGameActivity
 	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback) throws IOException
 	{
 		//SceneManager.getInstance().createSplashScene(pOnCreateSceneCallback);
+		//If splash screen, remove createMainScene, it will start onPopulateScene callback
 		SceneManager.getInstance().createMainScene();
 	}
 
@@ -77,6 +79,6 @@ public class GameActivity extends BaseGameActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
-		System.exit(0);	
+		//System.exit(0);	
 	}
 }

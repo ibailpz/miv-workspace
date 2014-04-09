@@ -8,26 +8,25 @@ public class GameScene extends BaseScene {
 	@Override
 	public void createScene() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onBackKeyPressed() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public SceneType getSceneType() {
-		// TODO Auto-generated method stub
-		return null;
+		return SceneType.SCENE_GAME;
 	}
 
 	@Override
 	public void disposeScene() {
-		// TODO Auto-generated method stub
-		
+		// TODO Detach and dispose all sprites, hud, etc.
+		this.detachSelf();
+		this.dispose();
 	}
-	
 
 }
