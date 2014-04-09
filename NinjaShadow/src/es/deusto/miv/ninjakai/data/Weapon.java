@@ -55,4 +55,6 @@ public abstract class Weapon extends AnimatedSprite {
 	public void setRank(int rank) {
 		this.rank = rank;
 	}
+	
+	public abstract double getSpeed(int[] from, int[] to);
 }
