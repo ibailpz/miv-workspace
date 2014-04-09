@@ -60,7 +60,7 @@ public class ResourcesManager
 	public ITiledTextureRegion player_region;
 	
 	private BitmapTextureAtlas splashTextureAtlas;
-	private BuildableBitmapTextureAtlas menuTextureAtlas;
+	private BuildableBitmapTextureAtlas mainTextureAtlas;
 	
 	// Level Complete Window
 	public ITextureRegion complete_window_region;
@@ -70,11 +70,11 @@ public class ResourcesManager
 	// CLASS LOGIC
 	//---------------------------------------------
 
-	public void loadMenuResources()
+	public void loadMainResources()
 	{
-		loadMenuGraphics();
-		loadMenuAudio();
-		loadMenuFonts();
+		loadMainGraphics();
+		loadMainAudio();
+		loadMainFonts();
 	}
 	
 	public void loadGameResources()
@@ -84,18 +84,34 @@ public class ResourcesManager
 		loadGameAudio();
 	}
 	
-	private void loadMenuGraphics()
+	public void loadArmoryResources()
+	{
+		//loadGameGraphics();
+		//loadGameFonts();
+		//loadGameAudio();
+		//TODO Load armory resources
+	}
+	
+	public void loadSettingsResources()
+	{
+		//loadGameGraphics();
+		//loadGameFonts();
+		//loadGameAudio();
+		//TODO Load settings resources
+	}
+	
+	private void loadMainGraphics()
 	{
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
-        menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
-        menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_background.png");
-        play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "play.png");
-        options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "options.png");
+        mainTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+        menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "menu_background.png");
+        play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "play.png");
+        options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "options.png");
        
     	try 
     	{
-			this.menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-			this.menuTextureAtlas.load();
+			this.mainTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.mainTextureAtlas.load();
 		} 
     	catch (final TextureAtlasBuilderException e)
     	{
@@ -103,12 +119,12 @@ public class ResourcesManager
 		}
 	}
 	
-	private void loadMenuAudio()
+	private void loadMainAudio()
 	{
 		
 	}
 	
-	private void loadMenuFonts()
+	private void loadMainFonts()
 	{
 		FontFactory.setAssetBasePath("font/");
 		final ITexture mainFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -171,14 +187,14 @@ public class ResourcesManager
 		splash_region = null;
 	}
 	
-	public void unloadMenuTextures()
+	public void unloadMainTextures()
 	{
-		menuTextureAtlas.unload();
+		mainTextureAtlas.unload();
 	}
 	
-	public void loadMenuTextures()
+	public void loadMainTextures()
 	{
-		menuTextureAtlas.load();
+		mainTextureAtlas.load();
 	}
 	
 	/**
