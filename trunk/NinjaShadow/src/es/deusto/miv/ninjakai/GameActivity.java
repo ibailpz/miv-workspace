@@ -18,6 +18,10 @@ import es.deusto.miv.ninjakai.manager.SceneManager;
 
 public class GameActivity extends BaseGameActivity
 {
+	
+	public static final int CAM_WIDTH = 800;
+	public static final int CAM_HEIGHT = 480;
+	
 	private BoundCamera camera;
 	
 	@Override
@@ -29,11 +33,12 @@ public class GameActivity extends BaseGameActivity
 	public EngineOptions onCreateEngineOptions()
 	{
 		//TODO Set current device screen size
-		camera = new BoundCamera(0, 0, 800, 480);
+		camera = new BoundCamera(0, 0, CAM_WIDTH, CAM_HEIGHT);
 		EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), this.camera);
 		engineOptions.getAudioOptions().setNeedsMusic(true).setNeedsSound(true);
 		//engineOptions.getRenderOptions().setMultiSampling(true);
 		engineOptions.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
+		engineOptions.getTouchOptions().setNeedsMultiTouch(true);
 		return engineOptions;
 	}
 	

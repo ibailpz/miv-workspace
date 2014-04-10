@@ -9,6 +9,7 @@ import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.util.GLState;
 
+import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
@@ -64,7 +65,8 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 	}
 
 	public void createBackground() {
-		attachChild(new Sprite(400, 240,
+		attachChild(new Sprite(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2,
 				resourcesManager.menu_background_region, vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -88,8 +90,8 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 		 * final IMenuItem armoryMenuItem = new ScaleMenuItemDecorator( new
 		 * SpriteMenuItem(MENU_ARMORY, resourcesManager.armory_region, vbom),
 		 * 1.2f, 1);
-		 */		
-		
+		 */
+
 		menuChildScene.addMenuItem(playMenuItem);
 		menuChildScene.addMenuItem(settingsMenuItem);
 		// menuChildScene.addMenuItem(armoryMenuItem);
