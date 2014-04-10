@@ -3,6 +3,7 @@ package es.deusto.miv.ninjakai.manager;
 import org.andengine.engine.Engine;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.scene.ArmoryScene;
@@ -28,7 +29,7 @@ public class SceneManager {
 
 	private static final SceneManager INSTANCE = new SceneManager();
 
-	private SceneType currentSceneType;
+	private SceneType currentSceneType = SceneType.SCENE_MAIN;
 
 	private BaseScene currentScene;
 
@@ -70,18 +71,27 @@ public class SceneManager {
 		}
 	}
 
-	/*
-	 * private void unloadCurrent() { switch (currentSceneType) { case
-	 * SCENE_MAIN: ResourcesManager.getInstance().unloadMainTextures(); break;
-	 * case SCENE_GAME: ResourcesManager.getInstance().unloadGameTextures();
-	 * break; case SCENE_SPLASH:
-	 * ResourcesManager.getInstance().unloadSplashScreen(); break; case
-	 * SCENE_LOADING: //ResourcesManager.getInstance().unloadLoadingScreen();
-	 * break; case SCENE_ARMORY:
-	 * ResourcesManager.getInstance().unloadArmoryTextures(); break; case
-	 * SCENE_SETTINGS: ResourcesManager.getInstance().unloadSettingsTextures();
-	 * break; default: break; } }
-	 */
+	private void unloadCurrent() {
+		switch (currentSceneType) {
+		case SCENE_MAIN:
+			ResourcesManager.getInstance().unloadMainTextures();
+			break;
+		case SCENE_GAME:
+			ResourcesManager.getInstance().unloadGameTextures();
+			break;
+		case SCENE_LOADING: 
+			//ResourcesManager.getInstance().unloadLoadingScreen();
+			break;
+		case SCENE_ARMORY:
+			ResourcesManager.getInstance().unloadArmoryTextures();
+			break;
+		case SCENE_SETTINGS:
+			ResourcesManager.getInstance().unloadSettingsTextures();
+			break;
+		default:
+			break;
+		}
+	}
 
 	/*
 	 * public void createSplashScene(OnCreateSceneCallback
@@ -97,20 +107,21 @@ public class SceneManager {
 	 * splashScene.disposeScene(); splashScene = null; }
 	 */
 
-	public void createMainScene() {
+	public void createMainScene(OnCreateSceneCallback pOnCreateSceneCallback) {
 		ResourcesManager.getInstance().loadMainResources();
 		mainScene = new MainScene();
 		loadingScene = new LoadingScene();
 		SceneManager.getInstance().setScene(mainScene);
+		pOnCreateSceneCallback.onCreateSceneFinished(mainScene);
 		// disposeSplashScene();
 	}
 
 	public void loadMainScene(final Engine mEngine) {
 		currentScene.disposeScene();
-		gameScene.disposeScene();
+		//gameScene.disposeScene();
 
-		// unloadCurrent();
-		ResourcesManager.getInstance().unloadGameTextures();
+		unloadCurrent();
+		//ResourcesManager.getInstance().unloadGameTextures();
 
 		setScene(mainScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
@@ -124,6 +135,7 @@ public class SceneManager {
 	}
 
 	public void loadGameScene(final Engine mEngine) {
+		unloadCurrent();
 		setScene(loadingScene);
 		ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
@@ -138,6 +150,7 @@ public class SceneManager {
 	}
 
 	public void loadArmoryScene(final Engine mEngine) {
+		unloadCurrent();
 		setScene(loadingScene);
 		ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
@@ -152,6 +165,7 @@ public class SceneManager {
 	}
 
 	public void loadSettingsScene(final Engine mEngine) {
+		unloadCurrent();
 		setScene(loadingScene);
 		ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,

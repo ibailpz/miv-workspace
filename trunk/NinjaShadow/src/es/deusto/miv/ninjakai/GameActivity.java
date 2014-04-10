@@ -5,8 +5,6 @@ import java.io.IOException;
 import org.andengine.engine.Engine;
 import org.andengine.engine.LimitedFPSEngine;
 import org.andengine.engine.camera.BoundCamera;
-import org.andengine.engine.handler.timer.ITimerCallback;
-import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
@@ -59,19 +57,19 @@ public class GameActivity extends BaseGameActivity
 	{
 		//SceneManager.getInstance().createSplashScene(pOnCreateSceneCallback);
 		//If splash screen, remove createMainScene, it will start onPopulateScene callback
-		SceneManager.getInstance().createMainScene();
+		SceneManager.getInstance().createMainScene(pOnCreateSceneCallback);
 	}
 
 	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) throws IOException
 	{
-		mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() 
+		/*mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() 
 		{
             public void onTimePassed(final TimerHandler pTimerHandler) 
             {
                 mEngine.unregisterUpdateHandler(pTimerHandler);
                 SceneManager.getInstance().createMainScene();
             }
-		}));
+		}));*/
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
 	
