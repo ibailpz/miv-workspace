@@ -1,4 +1,4 @@
-package es.deusto.miv.ninjakai.scene;
+package es.deusto.miv.ninjakai.old;
 
 import java.io.IOException;
 import java.io.InputStream;

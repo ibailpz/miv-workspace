@@ -20,206 +20,226 @@ import org.andengine.util.debug.Debug;
 import android.graphics.Color;
 import es.deusto.miv.ninjakai.GameActivity;
 
-/**
- * @author Mateusz Mysliwiec
- * @author www.matim-dev.com
- * @version 1.0
- */
-public class ResourcesManager
-{
-	//---------------------------------------------
+public class ResourcesManager {
+	// ---------------------------------------------
 	// VARIABLES
-	//---------------------------------------------
-	
+	// ---------------------------------------------
+
 	private static final ResourcesManager INSTANCE = new ResourcesManager();
-	
+
 	public Engine engine;
 	public GameActivity activity;
 	public BoundCamera camera;
 	public VertexBufferObjectManager vbom;
-	
+
 	public Font font;
-	
-	//---------------------------------------------
+
+	// ---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
-	//---------------------------------------------
-	
-	public ITextureRegion splash_region;
+	// ---------------------------------------------
+
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
-	public ITextureRegion options_region;
-	
+	public ITextureRegion settings_region;
+	public ITextureRegion armory_region;
+
 	// Game Texture
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
-	
+
+	public BuildableBitmapTextureAtlas settingsTextureAtlas;
+	public BuildableBitmapTextureAtlas armoryTextureAtlas;
+
 	// Game Texture Regions
-	public ITextureRegion platform1_region;
-	public ITextureRegion platform2_region;
-	public ITextureRegion platform3_region;
-	public ITextureRegion coin_region;
-	public ITiledTextureRegion player_region;
-	
-	private BitmapTextureAtlas splashTextureAtlas;
+	public ITextureRegion game_background_region;
+
+	// Settings Texture Regions
+	public ITextureRegion settings_background_region;
+
+	// Armory Texture Regions
+	public ITextureRegion armory_background_region;
+
 	private BuildableBitmapTextureAtlas mainTextureAtlas;
-	
+
 	// Level Complete Window
 	public ITextureRegion complete_window_region;
 	public ITiledTextureRegion complete_stars_region;
-	
-	//---------------------------------------------
-	// CLASS LOGIC
-	//---------------------------------------------
 
-	public void loadMainResources()
-	{
+	// ---------------------------------------------
+	// CLASS LOGIC
+	// ---------------------------------------------
+
+	public void loadMainResources() {
 		loadMainGraphics();
 		loadMainAudio();
 		loadMainFonts();
 	}
-	
-	public void loadGameResources()
-	{
+
+	public void loadGameResources() {
 		loadGameGraphics();
 		loadGameFonts();
 		loadGameAudio();
 	}
-	
-	public void loadArmoryResources()
-	{
-		//loadGameGraphics();
-		//loadGameFonts();
-		//loadGameAudio();
-		//TODO Load armory resources
+
+	public void loadArmoryResources() {
+		loadArmoryGraphics();
 	}
-	
-	public void loadSettingsResources()
-	{
-		//loadGameGraphics();
-		//loadGameFonts();
-		//loadGameAudio();
-		//TODO Load settings resources
+
+	public void loadSettingsResources() {
+		loadSettingsGraphics();
 	}
-	
-	private void loadMainGraphics()
-	{
+
+	private void loadMainGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
-        mainTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
-        menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "menu_background.png");
-        play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "play.png");
-        options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mainTextureAtlas, activity, "options.png");
-       
-    	try 
-    	{
-			this.mainTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+		mainTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR);
+		menu_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mainTextureAtlas, activity,
+						"menu_background.png");
+		
+		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mainTextureAtlas, activity, "play.png");
+		settings_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mainTextureAtlas, activity, "options.png");
+		armory_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mainTextureAtlas, activity, "armory.png");
+
+		try {
+			this.mainTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
 			this.mainTextureAtlas.load();
-		} 
-    	catch (final TextureAtlasBuilderException e)
-    	{
+		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
 	}
-	
-	private void loadMainAudio()
-	{
-		
-	}
-	
-	private void loadMainFonts()
-	{
-		FontFactory.setAssetBasePath("font/");
-		final ITexture mainFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
-		font = FontFactory.createStrokeFromAsset(activity.getFontManager(), mainFontTexture, activity.getAssets(), "font.ttf", 50, true, Color.WHITE, 2, Color.BLACK);
+	private void loadMainAudio() {
+
+	}
+
+	private void loadMainFonts() {
+		FontFactory.setAssetBasePath("font/");
+		final ITexture mainFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		font = FontFactory.createStrokeFromAsset(activity.getFontManager(),
+				mainFontTexture, activity.getAssets(), "font.ttf", 50, true,
+				Color.WHITE, 2, Color.BLACK);
 		font.load();
 	}
 
-	private void loadGameGraphics()
-	{
+	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
-        
-       	platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform1.png");
-       	platform2_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform2.png");
-       	platform3_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform3.png");
-        coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
-        player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1);
-        
-        complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelCompleteWindow.png");
-        complete_stars_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "star.png", 2, 1);
+		gameTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR);
 
-    	try 
-    	{
-			this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+		game_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "forest.png");
+
+		try {
+			this.gameTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
 			this.gameTextureAtlas.load();
-		} 
-    	catch (final TextureAtlasBuilderException e)
-    	{
+		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
 	}
-	
-	private void loadGameFonts()
-	{
-		
+
+	private void loadGameFonts() {
+
 	}
-	
-	private void loadGameAudio()
-	{
-		
+
+	private void loadGameAudio() {
+
 	}
-	
-	public void unloadGameTextures()
-	{
-		// TODO (Since we did not create any textures for game scene yet)
+
+
+	private void loadArmoryGraphics() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/armory/");
+		armoryTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR);
+		armory_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity,
+						"armory_background.png");
+		try {
+			this.armoryTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			this.armoryTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 	}
-	
-	public void loadSplashScreen()
-	{
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-        splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
-        splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "splash.png", 0, 0);
-        splashTextureAtlas.load();	
+
+	private void loadSettingsGraphics() {
+		BitmapTextureAtlasTextureRegionFactory
+				.setAssetBasePath("gfx/settings/");
+		settingsTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR);
+		settings_background_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(settingsTextureAtlas, activity,
+						"settings_background.png");
+		try {
+			this.settingsTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			this.settingsTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 	}
-	
-	public void unloadSplashScreen()
-	{
-		splashTextureAtlas.unload();
-		splash_region = null;
+
+	public void unloadSettingsTextures() {
+		settingsTextureAtlas.unload();
 	}
-	
-	public void unloadMainTextures()
-	{
-		mainTextureAtlas.unload();
-	}
-	
-	public void loadMainTextures()
-	{
+
+	public void loadMainTextures() {
 		mainTextureAtlas.load();
 	}
-	
+
+	public void unloadMainTextures() {
+		mainTextureAtlas.unload();
+	}
+
+	public void unloadArmoryTextures() {
+		armoryTextureAtlas.unload();
+	}
+
+	public void unloadGameTextures() {
+		// TODO (Since we did not create any textures for game scene yet)
+		gameTextureAtlas.unload();
+	}
+
 	/**
 	 * @param engine
 	 * @param activity
 	 * @param camera
 	 * @param vbom
-	 * <br><br>
-	 * We use this method at beginning of game loading, to prepare Resources Manager properly,
-	 * setting all needed parameters, so we can latter access them from different classes (eg. scenes)
+	 * <br>
+	 * <br>
+	 *            We use this method at beginning of game loading, to prepare
+	 *            Resources Manager properly, setting all needed parameters, so
+	 *            we can latter access them from different classes (eg. scenes)
 	 */
-	public static void prepareManager(Engine engine, GameActivity activity, BoundCamera camera, VertexBufferObjectManager vbom)
-	{
+	public static void prepareManager(Engine engine, GameActivity activity,
+			BoundCamera camera, VertexBufferObjectManager vbom) {
 		getInstance().engine = engine;
 		getInstance().activity = activity;
 		getInstance().camera = camera;
 		getInstance().vbom = vbom;
 	}
-	
-	//---------------------------------------------
+
+	// ---------------------------------------------
 	// GETTERS AND SETTERS
-	//---------------------------------------------
-	
-	public static ResourcesManager getInstance()
-	{
+	// ---------------------------------------------
+
+	public static ResourcesManager getInstance() {
 		return INSTANCE;
 	}
 }

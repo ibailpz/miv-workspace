@@ -9,11 +9,6 @@ import android.app.Activity;
 import es.deusto.miv.ninjakai.manager.ResourcesManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
-/**
- * @author Mateusz Mysliwiec
- * @author www.matim-dev.com
- * @version 1.0
- */
 public abstract class BaseScene extends Scene
 {
 	//---------------------------------------------
