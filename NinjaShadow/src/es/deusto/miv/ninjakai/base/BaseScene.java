@@ -13,7 +13,7 @@ public abstract class BaseScene extends Scene
 {
 	//---------------------------------------------
 	// VARIABLES
-	//---------------------------------------------
+	//-------------------------------------------
 	
 	protected Engine engine;
 	protected Activity activity;
