@@ -28,8 +28,6 @@ public class SettingsScene extends BaseScene {
 	@Override
 	public void disposeScene() {
 		// TODO Detach and dispose all sprites
-		this.detachSelf();
-		this.dispose();
 	}
 	
 	public void createBackground() {

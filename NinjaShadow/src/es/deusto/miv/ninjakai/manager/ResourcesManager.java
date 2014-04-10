@@ -115,7 +115,7 @@ public class ResourcesManager {
 	}
 
 	private void loadMainAudio() {
-
+		
 	}
 
 	private void loadMainFonts() {
@@ -133,7 +133,7 @@ public class ResourcesManager {
 	private void loadGameGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(
-				activity.getTextureManager(), 1024, 1024,
+				activity.getTextureManager(), 2048, 2048,
 				TextureOptions.BILINEAR);
 
 		game_background_region = BitmapTextureAtlasTextureRegionFactory
@@ -156,7 +156,6 @@ public class ResourcesManager {
 	private void loadGameAudio() {
 
 	}
-
 
 	private void loadArmoryGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/armory/");
