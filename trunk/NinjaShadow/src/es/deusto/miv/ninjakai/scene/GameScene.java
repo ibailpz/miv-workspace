@@ -59,7 +59,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void createHUD() {
-		scoreText = new Text(20, 420, resourcesManager.font,
+		scoreText = new Text(20, 420, resourcesManager.fontHUD,
 				"Score: 0123456789", new TextOptions(HorizontalAlign.LEFT),
 				vbom);
 		scoreText.setAnchorCenter(0, 0);
@@ -129,27 +129,27 @@ public class GameScene extends BaseScene {
 		};
 
 		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.font,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
 				"1", new TextOptions(HorizontalAlign.LEFT),
 				vbom));
 
 		a2.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.font,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
 				"2", new TextOptions(HorizontalAlign.LEFT),
 				vbom));
 
 		a3.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.font,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
 				"3", new TextOptions(HorizontalAlign.LEFT),
 				vbom));
 
 		a4.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.font,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
 				"4", new TextOptions(HorizontalAlign.LEFT),
 				vbom));
 
 		a5.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.font,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
 				"5", new TextOptions(HorizontalAlign.LEFT),
 				vbom));
 
