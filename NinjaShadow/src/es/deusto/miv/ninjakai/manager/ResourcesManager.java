@@ -32,22 +32,26 @@ public class ResourcesManager {
 	public BoundCamera camera;
 	public VertexBufferObjectManager vbom;
 
-	public Font font;
+	public Font fontMenuItems;
+	public Font fontTitle;
+	public Font fontHUD;
 
 	// ---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
 	// ---------------------------------------------
 
 	public ITextureRegion menu_background_region;
-	public ITextureRegion play_region;
-	public ITextureRegion settings_region;
-	public ITextureRegion armory_region;
+	// public ITextureRegion play_region;
+	// public ITextureRegion settings_region;
+	// public ITextureRegion armory_region;
+	public ITextureRegion splash_region;
 
 	// Game Texture
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 
 	public BuildableBitmapTextureAtlas settingsTextureAtlas;
 	public BuildableBitmapTextureAtlas armoryTextureAtlas;
+	public BitmapTextureAtlas splashTextureAtlas;
 
 	// Game Texture Regions
 	public ITextureRegion game_background_region;
@@ -67,6 +71,21 @@ public class ResourcesManager {
 	// ---------------------------------------------
 	// CLASS LOGIC
 	// ---------------------------------------------
+
+	public void loadSplashScreen() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		splashTextureAtlas = new BitmapTextureAtlas(
+				activity.getTextureManager(), GameActivity.CAM_WIDTH,
+				GameActivity.CAM_HEIGHT, TextureOptions.BILINEAR);
+		splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				splashTextureAtlas, activity, "splash.png", 0, 0);
+		splashTextureAtlas.load();
+	}
+
+	public void unloadSplashScreen() {
+		splashTextureAtlas.unload();
+		splash_region = null;
+	}
 
 	public void loadMainResources() {
 		loadMainGraphics();
@@ -94,15 +113,15 @@ public class ResourcesManager {
 				activity.getTextureManager(), 1024, 1024,
 				TextureOptions.BILINEAR);
 		menu_background_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mainTextureAtlas, activity,
-						"menu_background.png");
-		
-		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mainTextureAtlas, activity, "play.png");
-		settings_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mainTextureAtlas, activity, "options.png");
-		armory_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mainTextureAtlas, activity, "armory.png");
+				.createFromAsset(mainTextureAtlas, activity, "background.png");
+
+		// play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+		// mainTextureAtlas, activity, "play.png");
+		// settings_region = BitmapTextureAtlasTextureRegionFactory
+		// .createFromAsset(mainTextureAtlas, activity, "options.png");
+		// armory_region =
+		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+		// mainTextureAtlas, activity, "armory.png");
 
 		try {
 			this.mainTextureAtlas
@@ -115,19 +134,39 @@ public class ResourcesManager {
 	}
 
 	private void loadMainAudio() {
-		
+
 	}
 
 	private void loadMainFonts() {
 		FontFactory.setAssetBasePath("font/");
+		final ITexture hudFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
 		final ITexture mainFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
-		font = FontFactory.createStrokeFromAsset(activity.getFontManager(),
-				mainFontTexture, activity.getAssets(), "font.ttf", 50, true,
-				Color.WHITE, 2, Color.BLACK);
-		font.load();
+		final ITexture titleFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		fontHUD = FontFactory.createStrokeFromAsset(activity.getFontManager(),
+				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
+				Color.RED, 2, Color.BLACK);
+		fontHUD.load();
+
+		fontMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainFontTexture,
+				activity.getAssets(), "DOMO.TTF", 60, true, Color.RED, 2,
+				Color.BLACK);
+		fontMenuItems.load();
+
+		fontTitle = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), titleFontTexture,
+				activity.getAssets(), "DOMOI.TTF", 100, true, Color.RED, 2,
+				Color.RED);
+		fontTitle.load();
 	}
 
 	private void loadGameGraphics() {

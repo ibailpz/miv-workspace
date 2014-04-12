@@ -11,6 +11,7 @@ import es.deusto.miv.ninjakai.scene.GameScene;
 import es.deusto.miv.ninjakai.scene.LoadingScene;
 import es.deusto.miv.ninjakai.scene.MainScene;
 import es.deusto.miv.ninjakai.scene.SettingsScene;
+import es.deusto.miv.ninjakai.scene.SplashScene;
 
 public class SceneManager {
 	// ---------------------------------------------
@@ -22,6 +23,7 @@ public class SceneManager {
 	private BaseScene gameScene;
 	private BaseScene settingsScene;
 	private BaseScene armoryScene;
+	private BaseScene splashScene;
 
 	// ---------------------------------------------
 	// VARIABLES
@@ -29,14 +31,14 @@ public class SceneManager {
 
 	private static final SceneManager INSTANCE = new SceneManager();
 
-	private SceneType currentSceneType = SceneType.SCENE_MAIN;
+	private SceneType currentSceneType = SceneType.SCENE_SPLASH;
 
 	private BaseScene currentScene;
 
 	private Engine engine = ResourcesManager.getInstance().engine;
 
 	public enum SceneType {
-		SCENE_MAIN, SCENE_GAME, SCENE_LOADING, SCENE_ARMORY, SCENE_SETTINGS
+		SCENE_MAIN, SCENE_GAME, SCENE_LOADING, SCENE_ARMORY, SCENE_SETTINGS, SCENE_SPLASH
 	}
 
 	// ---------------------------------------------
@@ -74,13 +76,13 @@ public class SceneManager {
 	private void unloadCurrent() {
 		switch (currentSceneType) {
 		case SCENE_MAIN:
-			ResourcesManager.getInstance().unloadMainTextures();
+//			ResourcesManager.getInstance().unloadMainTextures();
 			break;
 		case SCENE_GAME:
 			ResourcesManager.getInstance().unloadGameTextures();
 			break;
-		case SCENE_LOADING: 
-			//ResourcesManager.getInstance().unloadLoadingScreen();
+		case SCENE_LOADING:
+			// ResourcesManager.getInstance().unloadLoadingScreen();
 			break;
 		case SCENE_ARMORY:
 			ResourcesManager.getInstance().unloadArmoryTextures();
@@ -93,42 +95,44 @@ public class SceneManager {
 		}
 	}
 
-	/*
-	 * public void createSplashScene(OnCreateSceneCallback
-	 * pOnCreateSceneCallback) {
-	 * ResourcesManager.getInstance().loadSplashScreen(); //splashScene = new
-	 * SplashScene(); currentScene = splashScene;
-	 * pOnCreateSceneCallback.onCreateSceneFinished(splashScene); }
-	 */
+	public void createSplashScene(OnCreateSceneCallback pOnCreateSceneCallback) {
+		ResourcesManager.getInstance().loadSplashScreen();
+		splashScene = new SplashScene();
+		currentScene = splashScene;
+		pOnCreateSceneCallback.onCreateSceneFinished(splashScene);
+	}
 
-	/*
-	 * private void disposeSplashScene() {
-	 * ResourcesManager.getInstance().unloadSplashScreen();
-	 * splashScene.disposeScene(); splashScene = null; }
-	 */
+	private void disposeSplashScene() {
+		ResourcesManager.getInstance().unloadSplashScreen();
+		splashScene.disposeScene();
+		splashScene = null;
+	}
 
-	public void createMainScene(OnCreateSceneCallback pOnCreateSceneCallback) {
+	// public void createMainScene(OnCreateSceneCallback pOnCreateSceneCallback)
+	// {
+	public void createMainScene() {
 		ResourcesManager.getInstance().loadMainResources();
+		ResourcesManager.getInstance().loadMainTextures();
 		mainScene = new MainScene();
 		loadingScene = new LoadingScene();
 		SceneManager.getInstance().setScene(mainScene);
-		pOnCreateSceneCallback.onCreateSceneFinished(mainScene);
-		// disposeSplashScene();
+		// pOnCreateSceneCallback.onCreateSceneFinished(mainScene);
+		disposeSplashScene();
 	}
 
 	public void loadMainScene(final Engine mEngine) {
 		currentScene.disposeScene();
-		//gameScene.disposeScene();
+		// gameScene.disposeScene();
 
 		unloadCurrent();
-		//ResourcesManager.getInstance().unloadGameTextures();
+		// ResourcesManager.getInstance().unloadGameTextures();
 
 		setScene(mainScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						ResourcesManager.getInstance().loadMainTextures();
+//						ResourcesManager.getInstance().loadMainTextures();
 						setScene(mainScene);
 					}
 				}));
@@ -137,7 +141,7 @@ public class SceneManager {
 	public void loadGameScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		ResourcesManager.getInstance().unloadMainTextures();
+		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
@@ -152,7 +156,7 @@ public class SceneManager {
 	public void loadArmoryScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		ResourcesManager.getInstance().unloadMainTextures();
+		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
@@ -167,7 +171,7 @@ public class SceneManager {
 	public void loadSettingsScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		ResourcesManager.getInstance().unloadMainTextures();
+		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
