@@ -158,6 +158,18 @@ public class GameScene extends BaseScene {
 		a3.setAlpha(0);
 		a4.setAlpha(0);
 		a5.setAlpha(0);
+		
+		Sprite ninja = new Sprite(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2,
+				resourcesManager.ninja_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+		ninja.setScale(0.75f);
+		ninja.setY(ninja.getY() + 40);
 
 		gameHUD.registerTouchArea(a1);
 		gameHUD.registerTouchArea(a2);
@@ -169,6 +181,7 @@ public class GameScene extends BaseScene {
 		gameHUD.attachChild(a3);
 		gameHUD.attachChild(a4);
 		gameHUD.attachChild(a5);
+		gameHUD.attachChild(ninja);
 	}
 
 }
