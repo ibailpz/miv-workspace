@@ -55,6 +55,7 @@ public class ResourcesManager {
 
 	// Game Texture Regions
 	public ITextureRegion game_background_region;
+	public ITextureRegion ninja_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -177,6 +178,9 @@ public class ResourcesManager {
 
 		game_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "forest.png");
+		
+		ninja_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "ninja.png");
 
 		try {
 			this.gameTextureAtlas
