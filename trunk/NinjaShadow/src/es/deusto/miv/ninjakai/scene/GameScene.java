@@ -2,6 +2,9 @@ package es.deusto.miv.ninjakai.scene;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -28,6 +31,9 @@ public class GameScene extends BaseScene {
 		createHUD();
 		createTouchAreas();
 		camera.setHUD(gameHUD);
+		createTrunk();
+		createShuriken();
+		createBomb();
 	}
 
 	@Override
@@ -129,39 +135,34 @@ public class GameScene extends BaseScene {
 		};
 
 		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
-				"1", new TextOptions(HorizontalAlign.LEFT),
-				vbom));
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "1",
+				new TextOptions(HorizontalAlign.LEFT), vbom));
 
 		a2.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
-				"2", new TextOptions(HorizontalAlign.LEFT),
-				vbom));
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "2",
+				new TextOptions(HorizontalAlign.LEFT), vbom));
 
 		a3.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
-				"3", new TextOptions(HorizontalAlign.LEFT),
-				vbom));
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "3",
+				new TextOptions(HorizontalAlign.LEFT), vbom));
 
 		a4.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
-				"4", new TextOptions(HorizontalAlign.LEFT),
-				vbom));
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "4",
+				new TextOptions(HorizontalAlign.LEFT), vbom));
 
 		a5.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD,
-				"5", new TextOptions(HorizontalAlign.LEFT),
-				vbom));
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "5",
+				new TextOptions(HorizontalAlign.LEFT), vbom));
 
 		a1.setAlpha(0);
 		a2.setAlpha(0);
 		a3.setAlpha(0);
 		a4.setAlpha(0);
 		a5.setAlpha(0);
-		
+
 		Sprite ninja = new Sprite(GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.ninja_region, vbom) {
+				GameActivity.CAM_HEIGHT / 2, resourcesManager.ninja_region,
+				vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
 				super.preDraw(pGLState, pCamera);
@@ -184,4 +185,70 @@ public class GameScene extends BaseScene {
 		gameHUD.attachChild(ninja);
 	}
 
+	private void createTrunk() {
+		final Sprite trunk = new Sprite(GameActivity.CAM_WIDTH / 6,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.tronco_region,
+				vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		LoopEntityModifier loopModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(
+						new MoveModifier(1, 0, 0, GameActivity.CAM_WIDTH / 2,
+								GameActivity.CAM_HEIGHT / 2), new MoveModifier(
+								1, GameActivity.CAM_WIDTH / 2,
+								GameActivity.CAM_HEIGHT / 2, 0, 0)));
+		trunk.registerEntityModifier(loopModifier);
+
+		gameHUD.attachChild(trunk);
+	}
+
+	private void createShuriken() {
+		final Sprite shuriken = new Sprite(GameActivity.CAM_WIDTH, 0,
+				resourcesManager.shuriken_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		LoopEntityModifier loopModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(new MoveModifier(2,
+						GameActivity.CAM_WIDTH, 0, GameActivity.CAM_WIDTH / 2,
+						GameActivity.CAM_HEIGHT / 2), new MoveModifier(2,
+						GameActivity.CAM_WIDTH / 2,
+						GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH, 0)));
+		shuriken.registerEntityModifier(loopModifier);
+
+		gameHUD.attachChild(shuriken);
+	}
+
+	private void createBomb() {
+		final Sprite bomb = new Sprite(GameActivity.CAM_WIDTH,
+				GameActivity.CAM_HEIGHT, resourcesManager.bomb_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		LoopEntityModifier loopModifier = new LoopEntityModifier(
+				new SequenceEntityModifier(
+						new MoveModifier(3, GameActivity.CAM_WIDTH,
+								GameActivity.CAM_HEIGHT,
+								GameActivity.CAM_WIDTH / 2,
+								GameActivity.CAM_HEIGHT / 2),
+						new MoveModifier(3, GameActivity.CAM_WIDTH / 2,
+								GameActivity.CAM_HEIGHT / 2,
+								GameActivity.CAM_WIDTH, GameActivity.CAM_HEIGHT)));
+		bomb.registerEntityModifier(loopModifier);
+
+		gameHUD.attachChild(bomb);
+	}
 }

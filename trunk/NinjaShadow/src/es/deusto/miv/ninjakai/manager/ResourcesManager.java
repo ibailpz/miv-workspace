@@ -41,9 +41,6 @@ public class ResourcesManager {
 	// ---------------------------------------------
 
 	public ITextureRegion menu_background_region;
-	// public ITextureRegion play_region;
-	// public ITextureRegion settings_region;
-	// public ITextureRegion armory_region;
 	public ITextureRegion splash_region;
 
 	// Game Texture
@@ -56,6 +53,9 @@ public class ResourcesManager {
 	// Game Texture Regions
 	public ITextureRegion game_background_region;
 	public ITextureRegion ninja_region;
+	public ITextureRegion tronco_region;
+	public ITextureRegion shuriken_region;
+	public ITextureRegion bomb_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -178,9 +178,18 @@ public class ResourcesManager {
 
 		game_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "forest.png");
+
+		ninja_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "ninja.png");
+
+		tronco_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "tronco.png");
 		
-		ninja_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(gameTextureAtlas, activity, "ninja.png");
+		shuriken_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "shuriken.png");
+		
+		bomb_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "bomb.png");
 
 		try {
 			this.gameTextureAtlas
