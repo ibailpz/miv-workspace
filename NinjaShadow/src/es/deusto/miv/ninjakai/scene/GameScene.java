@@ -22,6 +22,7 @@ import org.andengine.util.debug.Debug;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
+import es.deusto.miv.ninjakai.data.Ninja;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
@@ -33,6 +34,8 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	private HUD gameHUD;
 	private Text scoreText;
 	private boolean paused = false;
+
+	private Ninja ninja;
 
 	private Rectangle a1;
 	private Rectangle a2;
@@ -71,17 +74,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 
 	private MenuScene pauseScene() {
 		final MenuScene pauseGame = new MenuScene(camera);
-
-		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
-				RESUME, resourcesManager.fontMenuItems, "Resume", vbom), 1.2f,
-				1);
-		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight());
-
-		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
-				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
-		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight());
+		int heightFix = 10;
 
 		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
@@ -89,7 +82,25 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
 				Color.BLACK.getBlue(), 0.5f));
 
+		Text t = new Text(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT,
+				resourcesManager.fontTitle, "Pause", vbom);
+		t.setY(t.getY() - heightFix - t.getHeight() / 2);
+
+		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
+				RESUME, resourcesManager.fontMenuItems, "Resume", vbom), 1.2f,
+				1);
+		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
+						- t.getHeight() / 2);
+
+		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
+				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
+		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
+						- t.getHeight() / 2);
+
 		pauseGame.attachChild(back);
+		pauseGame.attachChild(t);
 		pauseGame.addMenuItem(btnPlay);
 		pauseGame.addMenuItem(btnExit);
 
@@ -155,6 +166,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				if (touchEvent.isActionUp()) {
 					// TODO Handle area 1
 					Debug.i("Area 1");
+					ninja.protect(1);
 				}
 				return true;
 			};
@@ -167,6 +179,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				if (touchEvent.isActionUp()) {
 					// TODO Handle area 2
 					Debug.i("Area 2");
+					ninja.protect(2);
 				}
 				return true;
 			};
@@ -179,6 +192,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				if (touchEvent.isActionUp()) {
 					// TODO Handle area 3
 					Debug.i("Area 3");
+					ninja.protect(3);
 				}
 				return true;
 			};
@@ -191,6 +205,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				if (touchEvent.isActionUp()) {
 					// TODO Handle area 4
 					Debug.i("Area 4");
+					ninja.protect(4);
 				}
 				return true;
 			};
@@ -203,6 +218,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				if (touchEvent.isActionUp()) {
 					// TODO Handle area 5
 					Debug.i("Area 5");
+					ninja.protect(5);
 				}
 				return true;
 			};
@@ -234,7 +250,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		a4.setAlpha(0);
 		a5.setAlpha(0);
 
-		Sprite ninja = new Sprite(GameActivity.CAM_WIDTH / 2,
+		ninja = new Ninja(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, resourcesManager.ninja_region,
 				vbom) {
 			@Override
