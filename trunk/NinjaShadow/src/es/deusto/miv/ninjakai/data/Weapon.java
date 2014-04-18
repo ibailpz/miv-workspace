@@ -13,11 +13,15 @@ public abstract class Weapon extends AnimatedSprite {
 	private ArrayList<Integer> positions;
 	private int rank;
 
-	public Weapon(String name, double speed[], int rank,
-			ArrayList<Integer> positions, float pX, float pY,
-			ITiledTextureRegion pTextureRegion,
+	public Weapon(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
-		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
+		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
+	}
+
+	public Weapon(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
+			VertexBufferObjectManager pVertexBufferObjectManager, String name,
+			double[] speed, ArrayList<Integer> positions, int rank) {
+		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		this.name = name;
 		this.speed = speed;
 		this.positions = positions;
@@ -56,5 +60,11 @@ public abstract class Weapon extends AnimatedSprite {
 		this.rank = rank;
 	}
 	
+	public boolean isProtecting(int area) {
+		return positions.contains(area);
+	}
+	
+	public abstract void protect(int area);
+
 	public abstract double getSpeed(int[] from, int[] to);
 }
