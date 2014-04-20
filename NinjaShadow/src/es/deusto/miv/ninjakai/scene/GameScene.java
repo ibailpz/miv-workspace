@@ -280,7 +280,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		gameHUD.registerTouchArea(a5);
 	}
 
-	private void createTrunk() {
+	private Sprite createTrunk(int area) {
 		final Sprite trunk = new Sprite(0, 0, resourcesManager.tronco_region,
 				vbom) {
 			@Override
@@ -289,27 +289,29 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				pGLState.enableDither();
 			}
 		};
+		switch (area) {
+		case 0:
+			trunk.setRotation(65);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			trunk.setRotation(118);
+			break;
+		case 4:
+			trunk.setRotation(65);
+			break;
+		default:
+			break;
+		}
 
-		trunk.setX(-trunk.getWidth());
-		trunk.setY(-trunk.getHeight());
-		trunk.setTag(0);
-
-		MoveModifier modifier = new MoveModifier(1, -trunk.getWidth(),
-				-trunk.getHeight(), GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 2) {
-			@Override
-			protected void onModifierFinished(IEntity pItem) {
-				super.onModifierFinished(pItem);
-				trunk.setTag(-1);
-			}
-		};
-		trunk.registerEntityModifier(modifier);
-
-		gameHUD.attachChild(trunk);
+		return trunk;
 	}
 
-	private void createShuriken() {
-		final Sprite shuriken = new Sprite(GameActivity.CAM_WIDTH, 0,
+	private Sprite createShuriken(int area) {
+		final Sprite shuriken = new Sprite(0, 0,
 				resourcesManager.shuriken_region, vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -318,64 +320,109 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 			}
 		};
 
-		shuriken.setX(shuriken.getX() + shuriken.getWidth());
-		shuriken.setY(-shuriken.getHeight());
-		shuriken.setTag(0);
-
-		MoveModifier modifier = new MoveModifier(2, GameActivity.CAM_WIDTH
-				+ shuriken.getWidth(), -shuriken.getHeight(),
-				GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 2) {
-			@Override
-			protected void onModifierFinished(IEntity pItem) {
-				super.onModifierFinished(pItem);
-				shuriken.setTag(-1);
-			}
-		};
-		shuriken.registerEntityModifier(modifier);
-
-		gameHUD.attachChild(shuriken);
+		return shuriken;
 	}
 
-	private void createBomb() {
-		final Sprite bomb = new Sprite(GameActivity.CAM_WIDTH,
-				GameActivity.CAM_HEIGHT, resourcesManager.bomb_region, vbom) {
+	private Sprite createBomb(int area) {
+		final Sprite bomb = new Sprite(0, 0, resourcesManager.bomb_region, vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
 			}
 		};
-		bomb.setX(bomb.getX() + bomb.getWidth());
-		bomb.setY(bomb.getY() + bomb.getHeight());
-		bomb.setTag(0);
+		return bomb;
+	}
 
-		MoveModifier modifier = new MoveModifier(3, GameActivity.CAM_WIDTH
-				+ bomb.getWidth(), GameActivity.CAM_HEIGHT + bomb.getHeight(),
-				GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 2) {
+	private void setObjectMovement(final Sprite obj, int area, int speed) {
+		float fromx;
+		float fromy;
+		int directionX = 1;
+		int directionY = 1;
+
+		switch (area) {
+		case 0:
+			fromx = -obj.getWidth();
+			fromy = GameActivity.CAM_HEIGHT + obj.getHeight();
+			directionX = -1;
+			break;
+		case 1:
+			fromx = GameActivity.CAM_WIDTH + obj.getWidth();
+			fromy = GameActivity.CAM_HEIGHT + obj.getHeight();
+			break;
+		case 2:
+			fromx = -obj.getWidth();
+			fromy = -obj.getHeight();
+			directionY = -1;
+			directionX = -1;
+			break;
+		case 3:
+			fromx = GameActivity.CAM_WIDTH / 2;
+			fromy = -obj.getHeight();
+			directionY = -1;
+			directionX = 0;
+			break;
+		case 4:
+		default:
+			fromx = GameActivity.CAM_WIDTH + obj.getWidth();
+			fromy = -obj.getHeight();
+			directionY = -1;
+			break;
+		}
+
+		MoveModifier modifier = new MoveModifier(speed, fromx, fromy,
+				GameActivity.CAM_WIDTH / 2 + 50 * directionX,
+				GameActivity.CAM_HEIGHT / 2 + 50 * directionY) {
 
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
-				bomb.setTag(-1);
+				obj.setTag(-1);
 			}
 		};
-		bomb.registerEntityModifier(modifier);
 
-		gameHUD.attachChild(bomb);
+		obj.registerEntityModifier(modifier);
+	}
+
+	private void throwObject(int area) {
+		int objType = (int) (Math.random() * 3); // TODO Change to number of
+													// objects
+		Sprite obj;
+		int speed;
+		switch (objType) {
+		case 0:
+			obj = createTrunk(area);
+			speed = 1;
+			break;
+		case 1:
+			obj = createShuriken(area);
+			speed = 2;
+			break;
+		case 2:
+			obj = createBomb(area);
+			speed = 3;
+			break;
+		default:
+			return;
+		}
+
+		obj.setX(obj.getX() + obj.getWidth());
+		obj.setY(obj.getY() + obj.getHeight());
+		obj.setTag(0);
+
+		setObjectMovement(obj, area, speed);
+
+		gameHUD.attachChild(obj);
 	}
 
 	// Game loop
 	private void loop(float pSecondsElapsed) {
-		while (gameHUD.detachChild(-1) != null) {
-		}
-		if (Math.random() < 0.005) {
-			createBomb();
-		}
-		if (Math.random() < 0.005) {
-			createShuriken();
-		}
-		if (Math.random() < 0.005) {
-			createTrunk();
+		// For each possibly generated object, remove an old one
+		gameHUD.detachChild(-1);
+
+		int area = (int) (Math.random() * 5);
+		if (Math.random() < 0.02) {
+			throwObject(area);
 		}
 	}
 }
