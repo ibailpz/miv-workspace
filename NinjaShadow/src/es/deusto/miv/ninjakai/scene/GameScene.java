@@ -16,13 +16,16 @@ import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.util.GLState;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
+import es.deusto.miv.ninjakai.data.IAreaObserver;
 import es.deusto.miv.ninjakai.data.Ninja;
+import es.deusto.miv.ninjakai.data.Weapon;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
@@ -36,12 +39,18 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	private boolean paused = false;
 
 	private Ninja ninja;
+	private Weapon weapon;
 
-	private Rectangle a1;
-	private Rectangle a2;
-	private Rectangle a3;
-	private Rectangle a4;
-	private Rectangle a5;
+	private Area a1;
+	private Area a2;
+	private Area a3;
+	private Area a4;
+	private Area a5;
+
+	public GameScene(Weapon weapon) {
+		this.weapon = weapon;
+		registerTouchAreas();
+	}
 
 	@Override
 	public void createScene() {
@@ -159,70 +168,25 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	}
 
 	private void createTouchAreas() {
-		a1 = new Rectangle(GameActivity.CAM_WIDTH / 4, GameActivity.CAM_HEIGHT
+		a1 = new Area(GameActivity.CAM_WIDTH / 4, GameActivity.CAM_HEIGHT
 				- GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 2, vbom) {
-			public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
-				if (touchEvent.isActionUp()) {
-					// TODO Handle area 1
-					Debug.i("Area 1");
-					ninja.protect(1);
-				}
-				return true;
-			};
-		};
+				GameActivity.CAM_HEIGHT / 2, vbom, 0);
 
-		a2 = new Rectangle(3 * GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT - GameActivity.CAM_HEIGHT / 4,
-				GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 2, vbom) {
-			public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
-				if (touchEvent.isActionUp()) {
-					// TODO Handle area 2
-					Debug.i("Area 2");
-					ninja.protect(2);
-				}
-				return true;
-			};
-		};
+		a2 = new Area(3 * GameActivity.CAM_WIDTH / 4, GameActivity.CAM_HEIGHT
+				- GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2, vbom, 1);
 
-		a3 = new Rectangle(GameActivity.CAM_WIDTH / 6,
+		a3 = new Area(GameActivity.CAM_WIDTH / 6, GameActivity.CAM_HEIGHT / 4,
+				GameActivity.CAM_WIDTH / 3, GameActivity.CAM_HEIGHT / 2, vbom,
+				2);
+
+		a4 = new Area(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 5,
+				GameActivity.CAM_WIDTH / 3, 2 * GameActivity.CAM_HEIGHT / 5,
+				vbom, 3);
+
+		a5 = new Area(5 * GameActivity.CAM_WIDTH / 6,
 				GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 3,
-				GameActivity.CAM_HEIGHT / 2, vbom) {
-			public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
-				if (touchEvent.isActionUp()) {
-					// TODO Handle area 3
-					Debug.i("Area 3");
-					ninja.protect(3);
-				}
-				return true;
-			};
-		};
-
-		a4 = new Rectangle(GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 3,
-				GameActivity.CAM_HEIGHT / 2, vbom) {
-			public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
-				if (touchEvent.isActionUp()) {
-					// TODO Handle area 4
-					Debug.i("Area 4");
-					ninja.protect(4);
-				}
-				return true;
-			};
-		};
-
-		a5 = new Rectangle(5 * GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 3,
-				GameActivity.CAM_HEIGHT / 2, vbom) {
-			public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
-				if (touchEvent.isActionUp()) {
-					// TODO Handle area 5
-					Debug.i("Area 5");
-					ninja.protect(5);
-				}
-				return true;
-			};
-		};
+				GameActivity.CAM_HEIGHT / 2, vbom, 4);
 
 		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "1",
@@ -259,10 +223,11 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				pGLState.enableDither();
 			}
 		};
-		ninja.setScale(0.75f);
+		ninja.setScale(0.9f);
 		ninja.setY(ninja.getY() + 40);
+		// ninja.setWeapon(weapon);
 
-		registerTouchAreas();
+		// registerTouchAreas();
 
 		gameHUD.attachChild(a1);
 		gameHUD.attachChild(a2);
@@ -273,15 +238,23 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	}
 
 	private void registerTouchAreas() {
+		ninja.setWeapon(weapon);
+
 		gameHUD.registerTouchArea(a1);
 		gameHUD.registerTouchArea(a2);
 		gameHUD.registerTouchArea(a3);
 		gameHUD.registerTouchArea(a4);
 		gameHUD.registerTouchArea(a5);
+
+		ninja.getWeapon().registerAreaObserver(0, a1);
+		ninja.getWeapon().registerAreaObserver(1, a2);
+		ninja.getWeapon().registerAreaObserver(2, a3);
+		ninja.getWeapon().registerAreaObserver(3, a4);
+		ninja.getWeapon().registerAreaObserver(4, a5);
 	}
 
 	private Sprite createTrunk(int area) {
-		final Sprite trunk = new Sprite(0, 0, resourcesManager.tronco_region,
+		final Sprite trunk = new Sprite(0, 0, resourcesManager.trunk_region,
 				vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -298,10 +271,10 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		case 2:
 			break;
 		case 3:
-			trunk.setRotation(118);
+			trunk.setRotation(-62);
 			break;
 		case 4:
-			trunk.setRotation(65);
+			trunk.setRotation(-118);
 			break;
 		default:
 			break;
@@ -334,7 +307,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		return bomb;
 	}
 
-	private void setObjectMovement(final Sprite obj, int area, int speed) {
+	private void setObjectMovement(final Sprite obj, final int area, int speed) {
 		float fromx;
 		float fromy;
 		int directionX = 1;
@@ -352,7 +325,7 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 			break;
 		case 2:
 			fromx = -obj.getWidth();
-			fromy = -obj.getHeight();
+			fromy = GameActivity.CAM_WIDTH / 4 - obj.getHeight();
 			directionY = -1;
 			directionX = -1;
 			break;
@@ -365,19 +338,23 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		case 4:
 		default:
 			fromx = GameActivity.CAM_WIDTH + obj.getWidth();
-			fromy = -obj.getHeight();
+			fromy = GameActivity.CAM_WIDTH / 4 - obj.getHeight();
 			directionY = -1;
 			break;
 		}
 
 		MoveModifier modifier = new MoveModifier(speed, fromx, fromy,
 				GameActivity.CAM_WIDTH / 2 + 50 * directionX,
-				GameActivity.CAM_HEIGHT / 2 + 50 * directionY) {
+				GameActivity.CAM_HEIGHT / 2 + 25 * directionY) {
 
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
 				obj.setTag(-1);
+				if (!weapon.isProtecting(area)) {
+					Debug.i("HIT!!");
+					// TODO If weapon not protecting ninja, hit
+				}
 			}
 		};
 
@@ -421,8 +398,40 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		gameHUD.detachChild(-1);
 
 		int area = (int) (Math.random() * 5);
-		if (Math.random() < 0.02) {
+		if (Math.random() < 0.01) {
 			throwObject(area);
 		}
+	}
+
+	private class Area extends Rectangle implements IAreaObserver {
+
+		private final int area;
+
+		public Area(float pX, float pY, float pWidth, float pHeight,
+				VertexBufferObjectManager pVertexBufferObjectManger, int area) {
+			super(pX, pY, pWidth, pHeight, pVertexBufferObjectManger);
+			this.area = area;
+			this.setColor(Color.WHITE);
+			this.setAlpha(0);
+		}
+
+		public boolean onAreaTouched(TouchEvent touchEvent, float X, float Y) {
+			if (touchEvent.isActionUp()) {
+				Debug.i("Area " + (area + 1));
+				ninja.protect(area);
+			}
+			return true;
+		}
+
+		@Override
+		public void onAreaProtected() {
+			this.setAlpha(0.1f);
+		}
+
+		@Override
+		public void onAreaUnprotected() {
+			this.setAlpha(0);
+		}
+
 	}
 }
