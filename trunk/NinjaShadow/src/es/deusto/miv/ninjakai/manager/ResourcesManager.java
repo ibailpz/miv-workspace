@@ -53,9 +53,11 @@ public class ResourcesManager {
 	// Game Texture Regions
 	public ITextureRegion game_background_region;
 	public ITextureRegion ninja_region;
-	public ITextureRegion tronco_region;
+	public ITextureRegion trunk_region;
 	public ITextureRegion shuriken_region;
 	public ITextureRegion bomb_region;
+
+	public ITiledTextureRegion weapon_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -94,8 +96,8 @@ public class ResourcesManager {
 		loadMainFonts();
 	}
 
-	public void loadGameResources() {
-		loadGameGraphics();
+	public void loadGameResources(String weapon) {
+		loadGameGraphics(weapon);
 		loadGameFonts();
 		loadGameAudio();
 	}
@@ -170,7 +172,7 @@ public class ResourcesManager {
 		fontTitle.load();
 	}
 
-	private void loadGameGraphics() {
+	private void loadGameGraphics(String weapon) {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), 2048, 2048,
@@ -182,14 +184,17 @@ public class ResourcesManager {
 		ninja_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "ninja.png");
 
-		tronco_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+		trunk_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "tronco.png");
-		
-		shuriken_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				gameTextureAtlas, activity, "shuriken.png");
-		
+
+		shuriken_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "shuriken.png");
+
 		bomb_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "bomb.png");
+
+		weapon_region = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(gameTextureAtlas, activity, weapon, 1, 1);
 
 		try {
 			this.gameTextureAtlas

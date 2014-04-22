@@ -6,12 +6,16 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import android.util.SparseArray;
+
 public abstract class Weapon extends AnimatedSprite {
 
 	private String name;
 	private double speed[];
-	private ArrayList<Integer> positions;
+	protected ArrayList<Integer> positions;
 	private int rank;
+	protected final SparseArray<IAreaObserver> areaObservers = new SparseArray<IAreaObserver>(
+			5);
 
 	public Weapon(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -59,12 +63,29 @@ public abstract class Weapon extends AnimatedSprite {
 	public void setRank(int rank) {
 		this.rank = rank;
 	}
-	
+
 	public boolean isProtecting(int area) {
 		return positions.contains(area);
 	}
-	
+
+	public final void registerAreaObserver(int area, IAreaObserver observer) {
+		areaObservers.put(area, observer);
+	}
+
 	public abstract void protect(int area);
 
 	public abstract double getSpeed(int[] from, int[] to);
+	
+	public abstract String getWeaponGraphics();
+	
+	public static enum WeaponType {
+		
+		KUNAI("shuriken.png");
+		
+		public final String graphics;
+		
+		WeaponType(String graphics) {
+			this.graphics = graphics;
+		}
+	}
 }

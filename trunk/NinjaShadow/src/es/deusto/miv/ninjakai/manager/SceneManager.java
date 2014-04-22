@@ -6,6 +6,8 @@ import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import es.deusto.miv.ninjakai.base.BaseScene;
+import es.deusto.miv.ninjakai.data.Weapon;
+import es.deusto.miv.ninjakai.data.weapon.Kunai;
 import es.deusto.miv.ninjakai.scene.ArmoryScene;
 import es.deusto.miv.ninjakai.scene.GameScene;
 import es.deusto.miv.ninjakai.scene.LoadingScene;
@@ -76,7 +78,7 @@ public class SceneManager {
 	private void unloadCurrent() {
 		switch (currentSceneType) {
 		case SCENE_MAIN:
-//			ResourcesManager.getInstance().unloadMainTextures();
+			// ResourcesManager.getInstance().unloadMainTextures();
 			break;
 		case SCENE_GAME:
 			ResourcesManager.getInstance().unloadGameTextures();
@@ -132,7 +134,7 @@ public class SceneManager {
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-//						ResourcesManager.getInstance().loadMainTextures();
+						// ResourcesManager.getInstance().loadMainTextures();
 						setScene(mainScene);
 					}
 				}));
@@ -146,8 +148,13 @@ public class SceneManager {
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						ResourcesManager.getInstance().loadGameResources();
-						gameScene = new GameScene();
+						// TODO Load weapon and pass to resources and scene
+						ResourcesManager.getInstance().loadGameResources(
+								Weapon.WeaponType.KUNAI.graphics);
+						Kunai k = new Kunai(-100, -100, ResourcesManager
+								.getInstance().weapon_region, ResourcesManager
+								.getInstance().vbom);
+						gameScene = new GameScene(k);
 						setScene(gameScene);
 					}
 				}));
