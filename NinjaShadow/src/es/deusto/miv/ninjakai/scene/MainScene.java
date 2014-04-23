@@ -67,8 +67,6 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 	}
 
 	public void createBackground() {
-		// setBackground(new Background(Color.BLACK));
-
 		attachChild(new Sprite(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2,
 				resourcesManager.menu_background_region, vbom) {
@@ -101,12 +99,12 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 				new TextMenuItem(MENU_PLAY, resourcesManager.fontMenuItems,
 						"Play", vbom), 1.2f, 1);
 		final IMenuItem settingsMenuItem = new ScaleMenuItemDecorator(
-				new TextMenuItem(MENU_SETTINGS, resourcesManager.fontMenuItems,
-						"Options", vbom), 1.2f, 1);
+				new TextMenuItem(MENU_ARMORY, resourcesManager.fontMenuItems,
+						"Armory", vbom), 1.2f, 1);
 
 		final IMenuItem armoryMenuItem = new ScaleMenuItemDecorator(
 				new TextMenuItem(MENU_SETTINGS, resourcesManager.fontMenuItems,
-						"Armory", vbom), 1.2f, 1);
+						"Settings", vbom), 1.2f, 1);
 
 		menuChildScene.addMenuItem(playMenuItem);
 		menuChildScene.addMenuItem(settingsMenuItem);

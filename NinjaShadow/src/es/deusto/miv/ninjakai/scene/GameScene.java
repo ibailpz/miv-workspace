@@ -46,15 +46,9 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	private Ninja ninja;
 	private Weapon weapon;
 
-	private Sprite life1;
-	private Sprite life2;
-	private Sprite life3;
+	private Sprite life1, life2, life3;
 
-	private Area a1;
-	private Area a2;
-	private Area a3;
-	private Area a4;
-	private Area a5;
+	private Area a1, a2, a3, a4, a5;
 
 	public GameScene(Weapon weapon) {
 		this.weapon = weapon;
@@ -145,7 +139,6 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 	}
 
 	private MenuScene gameOverScene() {
-		Debug.i("GameOver Scene");
 		final MenuScene gameOverGame = new MenuScene(camera);
 		int heightFix = 10;
 
@@ -156,17 +149,17 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				Color.BLACK.getBlue(), 0.5f));
 
 		Text t = new Text(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT,
-				resourcesManager.fontTitle, "A", vbom);
+				resourcesManager.fontTitle, "Game Over", vbom);
 		t.setY(t.getY() - heightFix - t.getHeight() / 2);
 
 		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
-				RESTART, resourcesManager.fontMenuItems, "B", vbom), 1.2f, 1);
+				RESTART, resourcesManager.fontMenuItems, "Restart", vbom), 1.2f, 1);
 		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
 						- t.getHeight() / 2);
 
 		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
-				EXIT, resourcesManager.fontMenuItems, "C", vbom), 1.2f, 1);
+				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
 		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
 						- t.getHeight() / 2);
@@ -292,16 +285,16 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 
 		// registerTouchAreas();
 
-		life1 = new Sprite(GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4,
+		life1 = new Sprite(GameActivity.CAM_WIDTH - 120,
+				GameActivity.CAM_HEIGHT - 40,
 				resourcesManager.ninja_life_region, vbom);
 		life1.setTag(LIFE1);
-		life2 = new Sprite(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4,
+		life2 = new Sprite(GameActivity.CAM_WIDTH -80,
+				GameActivity.CAM_HEIGHT - 40,
 				resourcesManager.ninja_life_region, vbom);
 		life2.setTag(LIFE2);
-		life3 = new Sprite(GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 4,
+		life3 = new Sprite(GameActivity.CAM_WIDTH - 40,
+				GameActivity.CAM_HEIGHT - 40,
 				resourcesManager.ninja_life_region, vbom);
 		life3.setTag(LIFE3);
 		
