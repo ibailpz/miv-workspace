@@ -56,6 +56,7 @@ public class ResourcesManager {
 	public ITextureRegion trunk_region;
 	public ITextureRegion shuriken_region;
 	public ITextureRegion bomb_region;
+	public ITextureRegion ninja_life_region;
 
 	public ITiledTextureRegion weapon_region;
 
@@ -192,6 +193,9 @@ public class ResourcesManager {
 
 		bomb_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "bomb.png");
+
+		ninja_life_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "ninja-life-new.png");
 
 		weapon_region = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(gameTextureAtlas, activity, weapon, 1, 1);
