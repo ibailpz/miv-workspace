@@ -32,7 +32,12 @@ import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 public class GameScene extends BaseScene implements IUpdateHandler {
 
 	private static final int RESUME = 1;
-	private static final int EXIT = 2;
+	private static final int RESTART = 2;
+	private static final int EXIT = 3;
+	
+	private static final int LIFE1 = 4;
+	private static final int LIFE2 = 5;
+	private static final int LIFE3 = 6;
 
 	private HUD gameHUD;
 	private Text scoreText;
@@ -40,6 +45,10 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 
 	private Ninja ninja;
 	private Weapon weapon;
+
+	private Sprite life1;
+	private Sprite life2;
+	private Sprite life3;
 
 	private Area a1;
 	private Area a2;
@@ -135,6 +144,59 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		return pauseGame;
 	}
 
+	private MenuScene gameOverScene() {
+		Debug.i("GameOver Scene");
+		final MenuScene gameOverGame = new MenuScene(camera);
+		int heightFix = 10;
+
+		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
+				GameActivity.CAM_HEIGHT, vbom);
+		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
+				Color.BLACK.getBlue(), 0.5f));
+
+		Text t = new Text(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT,
+				resourcesManager.fontTitle, "A", vbom);
+		t.setY(t.getY() - heightFix - t.getHeight() / 2);
+
+		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
+				RESTART, resourcesManager.fontMenuItems, "B", vbom), 1.2f, 1);
+		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
+						- t.getHeight() / 2);
+
+		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
+				EXIT, resourcesManager.fontMenuItems, "C", vbom), 1.2f, 1);
+		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
+						- t.getHeight() / 2);
+
+		gameOverGame.attachChild(back);
+		gameOverGame.attachChild(t);
+		gameOverGame.addMenuItem(btnPlay);
+		gameOverGame.addMenuItem(btnExit);
+
+		gameOverGame.setBackgroundEnabled(false);
+		gameOverGame.setOnMenuItemClickListener(new IOnMenuItemClickListener() {
+
+			@Override
+			public boolean onMenuItemClicked(MenuScene arg0, IMenuItem arg1,
+					float arg2, float arg3) {
+				switch (arg1.getID()) {
+				case RESTART:
+					SceneManager.getInstance().loadGameScene(engine);
+					return true;
+				case EXIT:
+					SceneManager.getInstance().loadMainScene(engine);
+					return true;
+				default:
+					return false;
+				}
+			}
+		});
+		return gameOverGame;
+	}
+
 	@Override
 	public SceneType getSceneType() {
 		return SceneType.SCENE_GAME;
@@ -225,16 +287,33 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		};
 		ninja.setScale(0.9f);
 		ninja.setY(ninja.getY() + 40);
+		ninja.setLifes(3);
 		// ninja.setWeapon(weapon);
 
 		// registerTouchAreas();
 
+		life1 = new Sprite(GameActivity.CAM_WIDTH / 6,
+				GameActivity.CAM_HEIGHT / 4,
+				resourcesManager.ninja_life_region, vbom);
+		life1.setTag(LIFE1);
+		life2 = new Sprite(GameActivity.CAM_WIDTH / 4,
+				GameActivity.CAM_HEIGHT / 4,
+				resourcesManager.ninja_life_region, vbom);
+		life2.setTag(LIFE2);
+		life3 = new Sprite(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 4,
+				resourcesManager.ninja_life_region, vbom);
+		life3.setTag(LIFE3);
+		
 		gameHUD.attachChild(a1);
 		gameHUD.attachChild(a2);
 		gameHUD.attachChild(a3);
 		gameHUD.attachChild(a4);
 		gameHUD.attachChild(a5);
 		gameHUD.attachChild(ninja);
+		gameHUD.attachChild(life1);
+		gameHUD.attachChild(life2);
+		gameHUD.attachChild(life3);
 	}
 
 	private void registerTouchAreas() {
@@ -352,8 +431,27 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				super.onModifierFinished(pItem);
 				obj.setTag(-1);
 				if (!weapon.isProtecting(area)) {
-					Debug.i("HIT!!");
+					Debug.i("HIT!!");	
+
 					// TODO If weapon not protecting ninja, hit
+					if (life1.hasParent()) {
+						life1.setTag(-1);
+						Debug.i("Life 1");
+					} else if (life2.hasParent()) {
+						life2.setTag(-1);
+						Debug.i("Life 2");
+					} else if (life3.hasParent()) {
+						life3.setTag(-1);
+						Debug.i("Life 3");
+					}
+
+					ninja.setLifes(ninja.getLifes() - 1);
+					System.out.println(ninja.getLifes());
+					if (ninja.getLifes() == 0) {
+						Debug.i("DEAD");
+						gameHUD.setChildScene(gameOverScene(), false, true,
+								true);
+					}
 				}
 			}
 		};
