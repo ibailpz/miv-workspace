@@ -93,22 +93,26 @@ public class ResourcesManager {
 
 	public void loadMainResources() {
 		loadMainGraphics();
-		loadMainAudio();
 		loadMainFonts();
+		loadMainAudio();
 	}
 
 	public void loadGameResources(String weapon) {
 		loadGameGraphics(weapon);
-		loadGameFonts();
+		loadMainFonts();
 		loadGameAudio();
 	}
 
 	public void loadArmoryResources() {
 		loadArmoryGraphics();
+		loadMainFonts();
+		loadMainAudio();
 	}
 
 	public void loadSettingsResources() {
 		loadSettingsGraphics();
+		loadMainFonts();
+		loadMainAudio();
 	}
 
 	private void loadMainGraphics() {
@@ -138,7 +142,7 @@ public class ResourcesManager {
 	}
 
 	private void loadMainAudio() {
-
+		//TODO General audio
 	}
 
 	private void loadMainFonts() {
@@ -210,12 +214,8 @@ public class ResourcesManager {
 		}
 	}
 
-	private void loadGameFonts() {
-
-	}
-
 	private void loadGameAudio() {
-
+		//TODO Game audio
 	}
 
 	private void loadArmoryGraphics() {
@@ -225,7 +225,7 @@ public class ResourcesManager {
 				TextureOptions.BILINEAR);
 		armory_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(armoryTextureAtlas, activity,
-						"armory_background.png");
+						"background.png");
 		try {
 			this.armoryTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -244,7 +244,7 @@ public class ResourcesManager {
 				TextureOptions.BILINEAR);
 		settings_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(settingsTextureAtlas, activity,
-						"settings_background.png");
+						"background.png");
 		try {
 			this.settingsTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
