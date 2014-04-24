@@ -65,6 +65,12 @@ public class ResourcesManager {
 
 	// Armory Texture Regions
 	public ITextureRegion armory_background_region;
+	public ITextureRegion kunai_armory_region;
+	public ITextureRegion stick_armory_region;
+	public ITextureRegion nunchaku_armory_region;
+	public ITextureRegion manriki_armory_region;
+	public ITextureRegion kusarigama_armory_region;
+	public ITextureRegion katana_armory_region;
 
 	private BuildableBitmapTextureAtlas mainTextureAtlas;
 
@@ -142,7 +148,7 @@ public class ResourcesManager {
 	}
 
 	private void loadMainAudio() {
-		//TODO General audio
+		// TODO General audio
 	}
 
 	private void loadMainFonts() {
@@ -199,7 +205,8 @@ public class ResourcesManager {
 				gameTextureAtlas, activity, "bomb.png");
 
 		ninja_life_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(gameTextureAtlas, activity, "ninja-life-new.png");
+				.createFromAsset(gameTextureAtlas, activity,
+						"ninja-life-new.png");
 
 		weapon_region = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(gameTextureAtlas, activity, weapon, 1, 1);
@@ -215,7 +222,7 @@ public class ResourcesManager {
 	}
 
 	private void loadGameAudio() {
-		//TODO Game audio
+		// TODO Game audio
 	}
 
 	private void loadArmoryGraphics() {
@@ -223,9 +230,22 @@ public class ResourcesManager {
 		armoryTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), 1024, 1024,
 				TextureOptions.BILINEAR);
+
 		armory_background_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(armoryTextureAtlas, activity,
-						"background.png");
+				.createFromAsset(armoryTextureAtlas, activity, "background.png");
+		kunai_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "kunai.png");
+		katana_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "katana.png");
+		kusarigama_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "kusarigama.png");
+		manriki_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "manriki.png");
+		nunchaku_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "nunchaku.png");
+		stick_armory_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity, "stick.png");
+
 		try {
 			this.armoryTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(

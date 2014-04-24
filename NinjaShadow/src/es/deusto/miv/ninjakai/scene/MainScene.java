@@ -50,7 +50,6 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
-		System.out.println("In");
 		switch (pMenuItem.getID()) {
 		case MENU_PLAY:
 			SceneManager.getInstance().loadGameScene(engine);
