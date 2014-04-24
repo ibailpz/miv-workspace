@@ -4,7 +4,9 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.RotationModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -29,34 +31,81 @@ import es.deusto.miv.ninjakai.data.Weapon;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
-public class GameScene extends BaseScene implements IUpdateHandler {
+public class GameScene extends BaseScene implements IUpdateHandler,
+		IOnMenuItemClickListener {
 
 	private static final int RESUME = 1;
 	private static final int RESTART = 2;
 	private static final int EXIT = 3;
-	
-	private static final int LIFE1 = 4;
-	private static final int LIFE2 = 5;
-	private static final int LIFE3 = 6;
 
 	private HUD gameHUD;
 	private Text scoreText;
 	private boolean paused = false;
+	private boolean finished = false;
 
 	private Ninja ninja;
-	private Weapon weapon;
 
-	private Sprite life1, life2, life3;
+	private Sprite[] lifes;
 
 	private Area a1, a2, a3, a4, a5;
 
 	public GameScene(Weapon weapon) {
-		this.weapon = weapon;
-		registerTouchAreas();
+		ninja.setWeapon(weapon);
+		registerWeaponAreas();
+	}
+
+	@Override
+	public void onBackKeyPressed() {
+		if (!paused && !finished) {
+			paused = true;
+			gameHUD.setChildScene(pauseScene(), false, true, true);
+		} else if (finished) {
+			SceneManager.getInstance().loadMainScene(engine);
+		}
+	}
+
+	@Override
+	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
+			float pMenuItemLocalX, float pMenuItemLocalY) {
+		switch (pMenuItem.getID()) {
+		case RESUME:
+			gameHUD.clearChildScene();
+			GameScene.this.paused = false;
+			return true;
+		case RESTART:
+			SceneManager.getInstance().loadGameScene(engine);
+			return true;
+		case EXIT:
+			SceneManager.getInstance().loadMainScene(engine);
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	public SceneType getSceneType() {
+		return SceneType.SCENE_GAME;
+	}
+
+	@Override
+	public void disposeScene() {
+		// TODO Detach and dispose all sprites, hud, etc.
+		camera.setHUD(null);
 	}
 
 	@Override
 	public void createScene() {
+		init();
+		createBackground();
+		createHUDTexts();
+		createTouchAreas();
+
+		gameHUD.attachChild(ninja);
+		camera.setHUD(gameHUD);
+	}
+
+	private void init() {
 		gameHUD = new HUD();
 		gameHUD.setIgnoreUpdate(false);
 		gameHUD.registerUpdateHandler(new IUpdateHandler() {
@@ -70,18 +119,20 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				loop(pSecondsElapsed);
 			}
 		});
-		createBackground();
-		createHUDTexts();
-		createTouchAreas();
-		camera.setHUD(gameHUD);
-	}
 
-	@Override
-	public void onBackKeyPressed() {
-		if (!paused) {
-			paused = true;
-			gameHUD.setChildScene(pauseScene(), false, true, true);
-		}
+		ninja = new Ninja(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2, resourcesManager.ninja_region,
+				vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+		ninja.setScale(0.9f);
+		ninja.setY(ninja.getY() + 40);
+		// TODO Load lifes from preferences
+		ninja.setLifes(3);
 	}
 
 	private MenuScene pauseScene() {
@@ -117,88 +168,68 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		pauseGame.addMenuItem(btnExit);
 
 		pauseGame.setBackgroundEnabled(false);
-		pauseGame.setOnMenuItemClickListener(new IOnMenuItemClickListener() {
-
-			@Override
-			public boolean onMenuItemClicked(MenuScene arg0, IMenuItem arg1,
-					float arg2, float arg3) {
-				switch (arg1.getID()) {
-				case RESUME:
-					gameHUD.clearChildScene();
-					GameScene.this.paused = false;
-					return true;
-				case EXIT:
-					SceneManager.getInstance().loadMainScene(engine);
-					return true;
-				default:
-					return false;
-				}
-			}
-		});
+		pauseGame.setOnMenuItemClickListener(this);
 		return pauseGame;
 	}
 
 	private MenuScene gameOverScene() {
-		final MenuScene gameOverGame = new MenuScene(camera);
+		final MenuScene gameOverScene = new MenuScene(camera);
 		int heightFix = 10;
 
 		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT, vbom);
-		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
-				Color.BLACK.getBlue(), 0.5f));
 
-		Text t = new Text(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT,
-				resourcesManager.fontTitle, "Game Over", vbom);
+		final Text t = new Text(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT, resourcesManager.fontTitle,
+				"Game Over", vbom);
 		t.setY(t.getY() - heightFix - t.getHeight() / 2);
+		t.setAlpha(0);
+		t.setVisible(false);
 
 		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
-				RESTART, resourcesManager.fontMenuItems, "Restart", vbom), 1.2f, 1);
+				RESTART, resourcesManager.fontMenuItems, "Restart", vbom),
+				1.2f, 1);
 		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
 						- t.getHeight() / 2);
+		btnPlay.setAlpha(0);
+		btnPlay.setVisible(false);
 
 		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
 				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
 		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
 						- t.getHeight() / 2);
+		btnExit.setAlpha(0);
+		btnExit.setVisible(false);
 
-		gameOverGame.attachChild(back);
-		gameOverGame.attachChild(t);
-		gameOverGame.addMenuItem(btnPlay);
-		gameOverGame.addMenuItem(btnExit);
-
-		gameOverGame.setBackgroundEnabled(false);
-		gameOverGame.setOnMenuItemClickListener(new IOnMenuItemClickListener() {
-
+		back.setAlpha(0);
+		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
+				Color.BLACK.getBlue(), 0.5f));
+		AlphaModifier m = new AlphaModifier(1, 0, 0.5f) {
 			@Override
-			public boolean onMenuItemClicked(MenuScene arg0, IMenuItem arg1,
-					float arg2, float arg3) {
-				switch (arg1.getID()) {
-				case RESTART:
-					SceneManager.getInstance().loadGameScene(engine);
-					return true;
-				case EXIT:
-					SceneManager.getInstance().loadMainScene(engine);
-					return true;
-				default:
-					return false;
-				}
+			protected void onModifierFinished(IEntity pItem) {
+				super.onModifierFinished(pItem);
+				AlphaModifier m = new AlphaModifier(1, 0, 1);
+				t.setVisible(true);
+				btnPlay.setVisible(true);
+				btnExit.setVisible(true);
+				t.registerEntityModifier(m);
+				btnPlay.registerEntityModifier(m);
+				btnExit.registerEntityModifier(m);
 			}
-		});
-		return gameOverGame;
-	}
+		};
+		back.registerEntityModifier(m);
 
-	@Override
-	public SceneType getSceneType() {
-		return SceneType.SCENE_GAME;
-	}
+		gameOverScene.attachChild(back);
+		gameOverScene.attachChild(t);
+		gameOverScene.addMenuItem(btnPlay);
+		gameOverScene.addMenuItem(btnExit);
 
-	@Override
-	public void disposeScene() {
-		// TODO Detach and dispose all sprites, hud, etc.
-		camera.setHUD(null);
+		gameOverScene.setBackgroundEnabled(false);
+		gameOverScene.setOnMenuItemClickListener(this);
+		return gameOverScene;
 	}
 
 	public void createBackground() {
@@ -220,6 +251,19 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		scoreText.setAnchorCenter(0, 0);
 		scoreText.setText("Score: 0");
 		gameHUD.attachChild(scoreText);
+
+		lifes = new Sprite[ninja.getLifes()];
+
+		for (int i = 0; i < lifes.length; i++) {
+			lifes[i] = new Sprite(GameActivity.CAM_WIDTH,
+					GameActivity.CAM_HEIGHT,
+					resourcesManager.ninja_life_region, vbom);
+			lifes[i].setPosition(
+					lifes[i].getX() - (lifes.length - i) * lifes[i].getWidth(),
+					lifes[i].getY() - lifes[i].getHeight());
+			lifes[i].setTag(4);
+			gameHUD.attachChild(lifes[i]);
+		}
 	}
 
 	private void createTouchAreas() {
@@ -231,16 +275,16 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				- GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, vbom, 1);
 
-		a3 = new Area(GameActivity.CAM_WIDTH / 6, GameActivity.CAM_HEIGHT / 4,
-				GameActivity.CAM_WIDTH / 3, GameActivity.CAM_HEIGHT / 2, vbom,
+		a3 = new Area(GameActivity.CAM_WIDTH / 5, GameActivity.CAM_HEIGHT / 4,
+				2 * GameActivity.CAM_WIDTH / 5, GameActivity.CAM_HEIGHT / 2, vbom,
 				2);
 
 		a4 = new Area(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 5,
-				GameActivity.CAM_WIDTH / 3, 2 * GameActivity.CAM_HEIGHT / 5,
+				GameActivity.CAM_WIDTH / 5, 2 * GameActivity.CAM_HEIGHT / 5,
 				vbom, 3);
 
-		a5 = new Area(5 * GameActivity.CAM_WIDTH / 6,
-				GameActivity.CAM_HEIGHT / 4, GameActivity.CAM_WIDTH / 3,
+		a5 = new Area(4 * GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 4, 2 * GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2, vbom, 4);
 
 		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
@@ -251,15 +295,15 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "2",
 				new TextOptions(HorizontalAlign.LEFT), vbom));
 
-		a3.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
+		a3.attachChild(new Text(GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "3",
 				new TextOptions(HorizontalAlign.LEFT), vbom));
 
-		a4.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
+		a4.attachChild(new Text(GameActivity.CAM_WIDTH / 10,
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "4",
 				new TextOptions(HorizontalAlign.LEFT), vbom));
 
-		a5.attachChild(new Text(GameActivity.CAM_WIDTH / 6,
+		a5.attachChild(new Text(GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "5",
 				new TextOptions(HorizontalAlign.LEFT), vbom));
 
@@ -269,55 +313,24 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 		a4.setAlpha(0);
 		a5.setAlpha(0);
 
-		ninja = new Ninja(GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT / 2, resourcesManager.ninja_region,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-		};
-		ninja.setScale(0.9f);
-		ninja.setY(ninja.getY() + 40);
-		ninja.setLifes(3);
-		// ninja.setWeapon(weapon);
-
-		// registerTouchAreas();
-
-		life1 = new Sprite(GameActivity.CAM_WIDTH - 120,
-				GameActivity.CAM_HEIGHT - 40,
-				resourcesManager.ninja_life_region, vbom);
-		life1.setTag(LIFE1);
-		life2 = new Sprite(GameActivity.CAM_WIDTH -80,
-				GameActivity.CAM_HEIGHT - 40,
-				resourcesManager.ninja_life_region, vbom);
-		life2.setTag(LIFE2);
-		life3 = new Sprite(GameActivity.CAM_WIDTH - 40,
-				GameActivity.CAM_HEIGHT - 40,
-				resourcesManager.ninja_life_region, vbom);
-		life3.setTag(LIFE3);
-		
 		gameHUD.attachChild(a1);
 		gameHUD.attachChild(a2);
 		gameHUD.attachChild(a3);
 		gameHUD.attachChild(a4);
 		gameHUD.attachChild(a5);
-		gameHUD.attachChild(ninja);
-		gameHUD.attachChild(life1);
-		gameHUD.attachChild(life2);
-		gameHUD.attachChild(life3);
+
+		registerTouchAreas();
 	}
 
 	private void registerTouchAreas() {
-		ninja.setWeapon(weapon);
-
 		gameHUD.registerTouchArea(a1);
 		gameHUD.registerTouchArea(a2);
 		gameHUD.registerTouchArea(a3);
 		gameHUD.registerTouchArea(a4);
 		gameHUD.registerTouchArea(a5);
+	}
 
+	private void registerWeaponAreas() {
 		ninja.getWeapon().registerAreaObserver(0, a1);
 		ninja.getWeapon().registerAreaObserver(1, a2);
 		ninja.getWeapon().registerAreaObserver(2, a3);
@@ -364,6 +377,15 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 				pGLState.enableDither();
 			}
 		};
+		
+		RotationModifier rm = new RotationModifier(0.75f, 0, 360) {
+			@Override
+			protected void onModifierFinished(IEntity pItem) {
+				super.onModifierFinished(pItem);
+				this.reset();
+			}
+		};
+		shuriken.registerEntityModifier(rm);
 
 		return shuriken;
 	}
@@ -423,25 +445,23 @@ public class GameScene extends BaseScene implements IUpdateHandler {
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
 				obj.setTag(-1);
-				if (!weapon.isProtecting(area)) {
-					Debug.i("HIT!!");	
-
-					// TODO If weapon not protecting ninja, hit
-					if (life1.hasParent()) {
-						life1.setTag(-1);
-						Debug.i("Life 1");
-					} else if (life2.hasParent()) {
-						life2.setTag(-1);
-						Debug.i("Life 2");
-					} else if (life3.hasParent()) {
-						life3.setTag(-1);
-						Debug.i("Life 3");
-					}
+				if (!ninja.getWeapon().isProtecting(area)) {
+					Debug.i("HIT!!");
 
 					ninja.setLifes(ninja.getLifes() - 1);
-					System.out.println(ninja.getLifes());
+
+					for (int i = 0; i < lifes.length; i++) {
+						if (lifes[i].hasParent()) {
+							lifes[i].setTag(-1);
+							Debug.i("Life " + (i + 1));
+							break;
+						}
+					}
+
+					System.out.println("Left " + ninja.getLifes());
 					if (ninja.getLifes() == 0) {
 						Debug.i("DEAD");
+						finished = true;
 						gameHUD.setChildScene(gameOverScene(), false, true,
 								true);
 					}
