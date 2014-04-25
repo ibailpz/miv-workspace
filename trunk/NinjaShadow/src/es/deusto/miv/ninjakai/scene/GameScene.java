@@ -453,6 +453,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					for (int i = 0; i < lifes.length; i++) {
 						if (lifes[i].hasParent()) {
 							lifes[i].setTag(-1);
+							//displayCollision();
 							Debug.i("Life " + (i + 1));
 							break;
 						}
@@ -501,6 +502,26 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		setObjectMovement(obj, area, speed);
 
 		gameHUD.attachChild(obj);
+	}
+	
+	private void displayCollision(){
+		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
+				GameActivity.CAM_HEIGHT, vbom);
+		back.setAlpha(0);
+		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
+				Color.BLACK.getBlue(), 0.5f));
+		
+		AlphaModifier m = new AlphaModifier(1, 0, 0.5f){
+			@Override
+			protected void onModifierFinished(IEntity pItem) {
+				super.onModifierFinished(pItem);
+				AlphaModifier m = new AlphaModifier(1, 0, 1);
+				back.registerEntityModifier(m);
+			}
+		};
+		back.registerEntityModifier(m);
+		gameHUD.attachChild(back);
 	}
 
 	// Game loop
