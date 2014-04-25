@@ -59,9 +59,18 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		}
 	};
 
+	private final String scoreString = "Score: %d%nx%.1f";
+	private final double pointsPerBlock = 100;
+	private final double minMult = 1.0;
+	private final double maxMult = 10.0;
+	private final double multInc = 0.1;
+	private double mult = minMult;
+	private double score = 0;
+
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
 		registerWeaponAreas();
+		scoreText.setText(String.format(scoreString, (int) score, mult));
 	}
 
 	@Override
@@ -164,18 +173,25 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				RESUME, resourcesManager.fontMenuItems, "Resume", vbom), 1.2f,
 				1);
 		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
-						- t.getHeight() / 2);
+				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix);
+
+		final IMenuItem btnRestart = new ScaleMenuItemDecorator(
+				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
+						"Restart", vbom), 1.2f, 1);
+		btnRestart.setPosition(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2 - heightFix - btnPlay.getHeight()
+						/ 2);
 
 		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
 				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
 		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
-						- t.getHeight() / 2);
+						- btnPlay.getHeight() / 2 - btnRestart.getHeight() / 2);
 
 		pauseGame.attachChild(back);
 		pauseGame.attachChild(t);
 		pauseGame.addMenuItem(btnPlay);
+		pauseGame.addMenuItem(btnRestart);
 		pauseGame.addMenuItem(btnExit);
 
 		pauseGame.setBackgroundEnabled(false);
@@ -198,14 +214,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		t.setAlpha(0);
 		t.setVisible(false);
 
-		final IMenuItem btnPlay = new ScaleMenuItemDecorator(new TextMenuItem(
-				RESTART, resourcesManager.fontMenuItems, "Restart", vbom),
-				1.2f, 1);
-		btnPlay.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + btnPlay.getHeight() - heightFix
-						- t.getHeight() / 2);
-		btnPlay.setAlpha(0);
-		btnPlay.setVisible(false);
+		final IMenuItem btnRestart = new ScaleMenuItemDecorator(
+				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
+						"Restart", vbom), 1.2f, 1);
+		btnRestart.setPosition(GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) + btnRestart.getHeight()
+						- heightFix - t.getHeight() / 2);
+		btnRestart.setAlpha(0);
+		btnRestart.setVisible(false);
 
 		final IMenuItem btnExit = new ScaleMenuItemDecorator(new TextMenuItem(
 				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
@@ -224,10 +240,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				super.onModifierFinished(pItem);
 				AlphaModifier m = new AlphaModifier(1, 0, 1);
 				t.setVisible(true);
-				btnPlay.setVisible(true);
+				btnRestart.setVisible(true);
 				btnExit.setVisible(true);
 				t.registerEntityModifier(m);
-				btnPlay.registerEntityModifier(m);
+				btnRestart.registerEntityModifier(m);
 				btnExit.registerEntityModifier(m);
 			}
 		};
@@ -235,7 +251,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		gameOverScene.attachChild(back);
 		gameOverScene.attachChild(t);
-		gameOverScene.addMenuItem(btnPlay);
+		gameOverScene.addMenuItem(btnRestart);
 		gameOverScene.addMenuItem(btnExit);
 
 		gameOverScene.setBackgroundEnabled(false);
@@ -256,11 +272,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	}
 
 	private void createHUDTexts() {
-		scoreText = new Text(20, 420, resourcesManager.fontHUD,
-				"Score: 0123456789", new TextOptions(HorizontalAlign.LEFT),
-				vbom);
+		scoreText = new Text(0, GameActivity.CAM_HEIGHT,
+				resourcesManager.fontHUD, "Score: 0123456789\nx99.9",
+				new TextOptions(HorizontalAlign.LEFT), vbom);
+		scoreText.setPosition(scoreText.getX() + 10, scoreText.getY()
+				- scoreText.getHeight() - 10);
 		scoreText.setAnchorCenter(0, 0);
-		scoreText.setText("Score: 0");
 		gameHUD.attachChild(scoreText);
 
 		lifes = new Sprite[ninja.getLifes()];
@@ -465,6 +482,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						if (lifes[i].hasParent()) {
 							lifes[i].setTag(-1);
 							flash();
+							mult = minMult;
 							Debug.i("Life " + (i + 1));
 							break;
 						}
@@ -478,7 +496,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 								true);
 						flash.setAlpha(0);
 					}
+				} else {
+					score += pointsPerBlock * mult;
+					if (mult < maxMult) {
+						mult += multInc;
+					}
 				}
+				scoreText
+						.setText(String.format(scoreString, (int) score, mult));
 			}
 		};
 
