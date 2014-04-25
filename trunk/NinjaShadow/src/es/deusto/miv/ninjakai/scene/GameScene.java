@@ -49,6 +49,16 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Area a1, a2, a3, a4, a5;
 
+	private Rectangle flash;
+	private AlphaModifier flashModifier = new AlphaModifier(0.05f, 0, 0.2f) {
+		@Override
+		protected void onModifierFinished(IEntity pItem) {
+			super.onModifierFinished(pItem);
+			AlphaModifier m = new AlphaModifier(0.05f, 0.2f, 0);
+			flash.registerEntityModifier(m);
+		}
+	};
+
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
 		registerWeaponAreas();
@@ -100,6 +110,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createBackground();
 		createHUDTexts();
 		createTouchAreas();
+		createFlash();
 
 		gameHUD.attachChild(ninja);
 		camera.setHUD(gameHUD);
@@ -258,8 +269,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			lifes[i] = new Sprite(GameActivity.CAM_WIDTH,
 					GameActivity.CAM_HEIGHT,
 					resourcesManager.ninja_life_region, vbom);
-			lifes[i].setPosition(
-					lifes[i].getX() - (lifes.length - i) * lifes[i].getWidth(),
+			lifes[i].setPosition(lifes[i].getX() - (lifes.length - i)
+					* lifes[i].getWidth(),
 					lifes[i].getY() - lifes[i].getHeight());
 			lifes[i].setTag(4);
 			gameHUD.attachChild(lifes[i]);
@@ -276,8 +287,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				GameActivity.CAM_HEIGHT / 2, vbom, 1);
 
 		a3 = new Area(GameActivity.CAM_WIDTH / 5, GameActivity.CAM_HEIGHT / 4,
-				2 * GameActivity.CAM_WIDTH / 5, GameActivity.CAM_HEIGHT / 2, vbom,
-				2);
+				2 * GameActivity.CAM_WIDTH / 5, GameActivity.CAM_HEIGHT / 2,
+				vbom, 2);
 
 		a4 = new Area(GameActivity.CAM_WIDTH / 2, GameActivity.CAM_HEIGHT / 5,
 				GameActivity.CAM_WIDTH / 5, 2 * GameActivity.CAM_HEIGHT / 5,
@@ -377,7 +388,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				pGLState.enableDither();
 			}
 		};
-		
+
 		RotationModifier rm = new RotationModifier(0.75f, 0, 360) {
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
@@ -453,7 +464,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					for (int i = 0; i < lifes.length; i++) {
 						if (lifes[i].hasParent()) {
 							lifes[i].setTag(-1);
-							//displayCollision();
+							flash();
 							Debug.i("Life " + (i + 1));
 							break;
 						}
@@ -465,6 +476,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						finished = true;
 						gameHUD.setChildScene(gameOverScene(), false, true,
 								true);
+						flash.setAlpha(0);
 					}
 				}
 			}
@@ -503,25 +515,21 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		gameHUD.attachChild(obj);
 	}
-	
-	private void displayCollision(){
-		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
+
+	private void createFlash() {
+		flash = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT, vbom);
-		back.setAlpha(0);
-		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
-				Color.BLACK.getBlue(), 0.5f));
-		
-		AlphaModifier m = new AlphaModifier(1, 0, 0.5f){
-			@Override
-			protected void onModifierFinished(IEntity pItem) {
-				super.onModifierFinished(pItem);
-				AlphaModifier m = new AlphaModifier(1, 0, 1);
-				back.registerEntityModifier(m);
-			}
-		};
-		back.registerEntityModifier(m);
-		gameHUD.attachChild(back);
+		flash.setColor(new Color(Color.RED.getRed(), Color.RED.getGreen(),
+				Color.RED.getBlue(), 0.4f));
+		flash.setAlpha(0);
+
+		gameHUD.attachChild(flash);
+	}
+
+	private void flash() {
+		flash.registerEntityModifier(flashModifier);
+		flashModifier.reset();
 	}
 
 	// Game loop
