@@ -42,7 +42,6 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 
 	@Override
 	public void disposeScene() {
-		// TODO Detach and dispose all sprites
 		this.detachSelf();
 		this.dispose();
 	}
@@ -86,13 +85,6 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 	public void createChildScene() {
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(0, 0);
-
-		// final IMenuItem playMenuItem = new ScaleMenuItemDecorator(
-		// new SpriteMenuItem(MENU_PLAY, resourcesManager.play_region,
-		// vbom), 1.2f, 1);
-		// final IMenuItem settingsMenuItem = new ScaleMenuItemDecorator(
-		// new SpriteMenuItem(MENU_SETTINGS,
-		// resourcesManager.settings_region, vbom), 1.2f, 1);
 
 		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(
 				new TextMenuItem(MENU_PLAY, resourcesManager.fontMenuItems,
