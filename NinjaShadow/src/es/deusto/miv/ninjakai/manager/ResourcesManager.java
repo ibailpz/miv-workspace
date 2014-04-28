@@ -57,6 +57,10 @@ public class ResourcesManager {
 	public ITextureRegion shuriken_region;
 	public ITextureRegion bomb_region;
 	public ITextureRegion ninja_life_region;
+	public ITextureRegion speedUp_region;
+	public ITextureRegion aura_region;
+	public ITextureRegion backup_region;
+	public ITextureRegion extraPoints_region;
 
 	public ITiledTextureRegion weapon_region;
 
@@ -210,6 +214,18 @@ public class ResourcesManager {
 
 		weapon_region = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(gameTextureAtlas, activity, weapon, 1, 1);
+
+		speedUp_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "speedup.png");
+
+		aura_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "aura.png");
+
+		backup_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				gameTextureAtlas, activity, "backup.png");
+
+		extraPoints_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "extrapoints.png");
 
 		try {
 			this.gameTextureAtlas
