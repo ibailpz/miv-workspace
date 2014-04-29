@@ -1,5 +1,7 @@
 package es.deusto.miv.ninjakai.scene;
 
+import java.util.ArrayList;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -27,6 +29,7 @@ import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.data.IAreaObserver;
 import es.deusto.miv.ninjakai.data.Ninja;
+import es.deusto.miv.ninjakai.data.PowerUp;
 import es.deusto.miv.ninjakai.data.Weapon;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
@@ -47,7 +50,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Sprite[] lifes;
 
-	private Sprite speedUpAcumulator, auraAcumulator, backupAcumulator,
+	private PowerUp speedUpAcumulator, auraAcumulator, backupAcumulator,
 			extraPointsAcumulator;
 
 	private Area a1, a2, a3, a4, a5;
@@ -370,55 +373,93 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		ninja.getWeapon().registerAreaObserver(4, a5);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void createPowerUpsAcumulator() {
-		speedUpAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.speedUp_region,
-				vbom) {
+		speedUpAcumulator = new PowerUp(0, 0, resourcesManager.speedUp_region,
+				vbom, false) {
+
 			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (speedUpAcumulator.isEnabled()) {
+					// TODO Do effect
+					speedUpAcumulator.setEnabled(false);
+				}
+				return false;
 			}
 		};
+		speedUpAcumulator.setColor(Color.BLACK);
 
-		auraAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.aura_region, vbom) {
+		auraAcumulator = new PowerUp(0, 0, resourcesManager.aura_region, vbom,
+				false) {
+
 			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (auraAcumulator.isEnabled()) {
+					// TODO Do effect
+					auraAcumulator.setEnabled(false);
+				}
+				return false;
 			}
 		};
+		auraAcumulator.setColor(Color.BLACK);
 
-		backupAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.backup_region,
-				vbom) {
+		backupAcumulator = new PowerUp(0, 0, resourcesManager.backup_region,
+				vbom, false) {
+
 			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (backupAcumulator.isEnabled()) {
+					// TODO Do effect
+					backupAcumulator.setEnabled(false);
+				}
+				return false;
 			}
 		};
+		backupAcumulator.setColor(Color.BLACK);
 
-		extraPointsAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4,
-				resourcesManager.extraPoints_region, vbom) {
+		extraPointsAcumulator = new PowerUp(0, 0,
+				resourcesManager.extraPoints_region, vbom, false) {
+
 			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (extraPointsAcumulator.isEnabled()) {
+					// TODO Do effect
+					extraPointsAcumulator.setEnabled(false);
+				}
+				return false;
 			}
 		};
+		extraPointsAcumulator.setColor(Color.BLACK);
 
-		speedUpAcumulator.setScale(0.1f);
+		speedUpAcumulator.setScale(0.8f);
 		auraAcumulator.setScale(0.1f);
-		backupAcumulator.setScale(0.1f);
-		extraPointsAcumulator.setScale(0.1f);
-		
-		gameHUD.attachChild(speedUpAcumulator);
-		gameHUD.attachChild(backupAcumulator);
-		gameHUD.attachChild(auraAcumulator);
-		gameHUD.attachChild(extraPointsAcumulator);
+		backupAcumulator.setScale(0.2f);
+		extraPointsAcumulator.setScale(0.2f);
+
+		ArrayList<Sprite> powerUps = new ArrayList<Sprite>(4);
+		powerUps.add(speedUpAcumulator);
+		powerUps.add(auraAcumulator);
+		powerUps.add(backupAcumulator);
+		powerUps.add(extraPointsAcumulator);
+
+		int heightFix = 15;
+
+		Sprite s;
+		for (int i = 0; i < powerUps.size(); i++) {
+			int widthFix = heightFix * (i + 1);
+			s = powerUps.get(i);
+			for (int j = 0; j < i; j++) {
+				widthFix += powerUps.get(i).getWidthScaled();
+			}
+			s.setPosition(GameActivity.CAM_WIDTH - s.getWidthScaled() / 2
+					- widthFix, s.getHeightScaled() / 2 + heightFix);
+			gameHUD.registerTouchArea(s);
+			gameHUD.attachChild(s);
+		}
 	}
 
 	private Sprite createSpeedUp(int area) {
@@ -429,7 +470,18 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
 			}
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					this.setTag(-1);
+					speedUpAcumulator.setEnabled(true);
+				}
+				return false;
+			}
 		};
+		speedUp.setScale(0.8f);
 		return speedUp;
 	}
 
@@ -439,6 +491,16 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			protected void preDraw(GLState pGLState, Camera pCamera) {
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
+			}
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					this.setTag(-1);
+					auraAcumulator.setEnabled(true);
+				}
+				return false;
 			}
 		};
 		aura.setScale(0.1f);
@@ -454,8 +516,18 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
 			}
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					this.setTag(-1);
+					backupAcumulator.setEnabled(true);
+				}
+				return false;
+			}
 		};
-		backup.setScale(0.1f);
+		backup.setScale(0.2f);
 		return backup;
 	}
 
@@ -471,11 +543,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				Debug.i("Extra Point !!!!");
-				return true;
+				if (pSceneTouchEvent.isActionUp()) {
+					this.setTag(-1);
+					extraPointsAcumulator.setEnabled(true);
+				}
+				return false;
 			}
 		};
-		extraPoints.setScale(0.5f);
+		extraPoints.setScale(0.2f);
 		return extraPoints;
 	}
 
@@ -542,7 +617,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		return bomb;
 	}
 
-	private void setObjectMovement(final Sprite obj, final int area, int speed) {
+	private void setObjectMovement(final Sprite obj, final int area, int speed,
+			final boolean hits) {
 		float fromx;
 		float fromy;
 		int directionX = 1;
@@ -586,6 +662,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
 				obj.setTag(-1);
+				if (!hits) {
+					return;
+				}
 				if (!ninja.getWeapon().isProtecting(area)) {
 					Debug.i("HIT!!");
 
@@ -649,7 +728,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		obj.setY(obj.getY() + obj.getHeight());
 		obj.setTag(0);
 
-		setObjectMovement(obj, area, speed);
+		setObjectMovement(obj, area, speed, true);
 
 		gameHUD.attachChild(obj);
 	}
@@ -657,29 +736,38 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private void throwPowerUp(int area) {
 		int objType = (int) (Math.random() * 4);
 		// TODO Remove - Only for tests
-		objType = 3;
+//		objType = 3;
 
+		int speed;
 		Sprite obj;
 		switch (objType) {
 		case 0:
 			obj = createSpeedUp(area);
+			speed = 2;
 			break;
 		case 1:
 			obj = createAura(area);
+			speed = 2;
 			break;
 		case 2:
 			obj = createBackup(area);
+			speed = 2;
 			break;
 		case 3:
 			obj = createExtraPoints(area);
+			speed = 2;
 			break;
 		default:
 			return;
 		}
+		
+		gameHUD.registerTouchArea(obj);
 
 		obj.setX(obj.getX() + obj.getWidth());
 		obj.setY(obj.getY() + obj.getHeight());
 		obj.setTag(0);
+
+		setObjectMovement(obj, area, speed, false);
 
 		gameHUD.attachChild(obj);
 	}
@@ -707,7 +795,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		int area = (int) (Math.random() * 5);
 		if (Math.random() < 0.01) {
-			throwObject(area);
+			// throwObject(area);
+		}
+		if (Math.random() < 0.01) {
 			throwPowerUp(area);
 		}
 	}
@@ -729,7 +819,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				Debug.i("Area " + (area + 1));
 				ninja.protect(area);
 			}
-			return true;
+			return false;
 		}
 
 		@Override
