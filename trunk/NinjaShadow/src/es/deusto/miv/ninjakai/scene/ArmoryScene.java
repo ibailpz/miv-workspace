@@ -11,6 +11,7 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.adt.align.HorizontalAlign;
+import org.andengine.util.adt.color.Color;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
@@ -37,12 +38,17 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private final int STICK_UNLOCK = 10;
 	private final int STICK_EQUIP = 11;
 
+	private final float unlockHeightFix = 30;
+	private final float equipHeightFix = 80;
+	private final float widthFix = 60;
+
 	@Override
 	public void createScene() {
 		gameHUD = new HUD();
 		createBackground();
 		createWeapons();
 		createChildScene();
+		loadSettings();
 		camera.setHUD(gameHUD);
 	}
 
@@ -65,6 +71,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
+		// TODO
 		switch (pMenuItem.getID()) {
 		case KUNAI_UNLOCK:
 
@@ -125,6 +132,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		attachChild(t);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void createWeapons() {
 		kunai = new Sprite(GameActivity.CAM_WIDTH / 6,
 				GameActivity.CAM_HEIGHT / 2,
@@ -141,21 +149,22 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		kusarigama = new Sprite(5 * GameActivity.CAM_WIDTH / 6,
 				GameActivity.CAM_HEIGHT / 2,
 				resourcesManager.kusarigama_armory_region, vbom);
-		katana = new Sprite(6 * GameActivity.CAM_WIDTH / 6,
+		katana = new Sprite(GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT / 2,
 				resourcesManager.katana_armory_region, vbom);
 
-		kunai.setX(kunai.getX() - 50);
+		kunai.setX(kunai.getX() - kunai.getWidthScaled() / 2);
 		stick.setScale(0.8f);
-		stick.setX(stick.getX() - 60);
+		stick.setX(stick.getX() - stick.getWidthScaled() / 2);
 		nunchaku.setScale(0.5f);
-		nunchaku.setX(nunchaku.getX() - 60);
+		nunchaku.setX(nunchaku.getX() - nunchaku.getWidthScaled() / 2);
 		manriki.setScale(0.5f);
-		manriki.setX(manriki.getX() - 60);
+		manriki.setX(manriki.getX() - manriki.getWidthScaled() / 2);
 		kusarigama.setScale(0.8f);
-		kusarigama.setX(kusarigama.getX() - 60);
-		katana.setScale(0.8f);
-		katana.setX(katana.getX() - 50);
+		kusarigama.setX(kusarigama.getX() - kusarigama.getWidthScaled() / 2);
+		katana.setScale(0.7f);
+		katana.setRotation(250);
+		katana.setX(katana.getX() - katana.getWidthScaled() / 2);
 
 		gameHUD.attachChild(kunai);
 		gameHUD.attachChild(kusarigama);
@@ -171,45 +180,45 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 		final IMenuItem unlockKunai = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUNAI_UNLOCK, resourcesManager.fontMenuItems,
-						"Unlock1", vbom), 0.5f, 0.5f);
+						"Unlock1", vbom), 0.7f, 0.5f);
 		final IMenuItem equipKunai = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUNAI_EQUIP, resourcesManager.fontMenuItems,
-						"Equip1", vbom), 0.5f, 0.5f);
+						"Equip1", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockStick = new ScaleMenuItemDecorator(
 				new TextMenuItem(STICK_UNLOCK, resourcesManager.fontMenuItems,
-						"Unlock2", vbom), 0.5f, 0.5f);
+						"Unlock2", vbom), 0.7f, 0.5f);
 		final IMenuItem equipStick = new ScaleMenuItemDecorator(
 				new TextMenuItem(STICK_EQUIP, resourcesManager.fontMenuItems,
-						"Equip2", vbom), 0.5f, 0.5f);
+						"Equip2", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockNunchaku = new ScaleMenuItemDecorator(
 				new TextMenuItem(NUNCHAKU_UNLOCK,
-						resourcesManager.fontMenuItems, "Unlock3", vbom), 0.5f,
+						resourcesManager.fontMenuItems, "Unlock3", vbom), 0.7f,
 				0.5f);
 		final IMenuItem equipNunchaku = new ScaleMenuItemDecorator(
 				new TextMenuItem(NUNCHAKU_EQUIP,
-						resourcesManager.fontMenuItems, "Equip3", vbom), 0.5f,
+						resourcesManager.fontMenuItems, "Equip3", vbom), 0.7f,
 				0.5f);
 		final IMenuItem unlockManriki = new ScaleMenuItemDecorator(
 				new TextMenuItem(MANRIKI_UNLOCK,
-						resourcesManager.fontMenuItems, "Unlock4", vbom), 0.5f,
+						resourcesManager.fontMenuItems, "Unlock4", vbom), 0.7f,
 				0.5f);
 		final IMenuItem equipManriki = new ScaleMenuItemDecorator(
 				new TextMenuItem(MANRIKI_EQUIP, resourcesManager.fontMenuItems,
-						"Equip4", vbom), 0.5f, 0.5f);
+						"Equip4", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockKusarigama = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUSARIGAMA_UNLOCK,
-						resourcesManager.fontMenuItems, "Unlock5", vbom), 0.5f,
+						resourcesManager.fontMenuItems, "Unlock5", vbom), 0.7f,
 				0.5f);
 		final IMenuItem equipKusarigama = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUSARIGAMA_EQUIP,
-						resourcesManager.fontMenuItems, "Equip5", vbom), 0.5f,
+						resourcesManager.fontMenuItems, "Equip5", vbom), 0.7f,
 				0.5f);
 		final IMenuItem unlockKatana = new ScaleMenuItemDecorator(
 				new TextMenuItem(KATANA_UNLOCK, resourcesManager.fontMenuItems,
-						"Unlock6", vbom), 0.5f, 0.5f);
+						"Unlock6", vbom), 0.7f, 0.5f);
 		final IMenuItem equipKatana = new ScaleMenuItemDecorator(
 				new TextMenuItem(KATANA_EQUIP, resourcesManager.fontMenuItems,
-						"Equip6", vbom), 0.5f, 0.5f);
+						"Equip6", vbom), 0.7f, 0.5f);
 
 		menuChildScene.addMenuItem(unlockKunai);
 		menuChildScene.addMenuItem(equipKunai);
@@ -227,32 +236,41 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
 
-		unlockKunai.setPosition(GameActivity.CAM_WIDTH / 6 - 50,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipKunai.setPosition(GameActivity.CAM_WIDTH / 6 - 50,
-				GameActivity.CAM_HEIGHT / 3 - 60);
-		unlockStick.setPosition(2 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipStick.setPosition(2 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 60);
-		unlockNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 60);
-		unlockManriki.setPosition(4 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipManriki.setPosition(4 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 60);
-		unlockKusarigama.setPosition(5 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipKusarigama.setPosition(5 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 60);
-		unlockKatana.setPosition(6 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 20);
-		equipKatana.setPosition(6 * GameActivity.CAM_WIDTH / 6 - 60,
-				GameActivity.CAM_HEIGHT / 3 - 60);
+		unlockKunai.setPosition(GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipKunai.setPosition(GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+		unlockStick.setPosition(2 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipStick.setPosition(2 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+		unlockNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+		unlockManriki.setPosition(4 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipManriki.setPosition(4 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+		unlockKusarigama.setPosition(5 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipKusarigama.setPosition(5 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+		unlockKatana.setPosition(6 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		equipKatana.setPosition(6 * GameActivity.CAM_WIDTH / 6 - widthFix,
+				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
 
 		menuChildScene.setOnMenuItemClickListener(this);
 		setChildScene(menuChildScene);
+	}
+	
+	private void loadSettings() {
+		// TODO Set hidden the locked ones
+		stick.setColor(Color.BLACK);
+		nunchaku.setColor(Color.BLACK);
+		manriki.setColor(Color.BLACK);
+		kusarigama.setColor(Color.BLACK);
+		katana.setColor(Color.BLACK);
 	}
 }
