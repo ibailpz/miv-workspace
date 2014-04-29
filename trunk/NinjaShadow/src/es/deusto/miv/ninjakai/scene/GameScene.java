@@ -47,6 +47,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Sprite[] lifes;
 
+	private Sprite speedUpAcumulator, auraAcumulator, backupAcumulator,
+			extraPointsAcumulator;
+
 	private Area a1, a2, a3, a4, a5;
 
 	private Rectangle flash;
@@ -120,6 +123,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createHUDTexts();
 		createTouchAreas();
 		createFlash();
+		createPowerUpsAcumulator();
 
 		gameHUD.attachChild(ninja);
 		camera.setHUD(gameHUD);
@@ -366,6 +370,115 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		ninja.getWeapon().registerAreaObserver(4, a5);
 	}
 
+	private void createPowerUpsAcumulator() {
+		speedUpAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.speedUp_region,
+				vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		auraAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.aura_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		backupAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 4, resourcesManager.backup_region,
+				vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		extraPointsAcumulator = new Sprite(GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 4,
+				resourcesManager.extraPoints_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+
+		speedUpAcumulator.setScale(0.1f);
+		auraAcumulator.setScale(0.1f);
+		backupAcumulator.setScale(0.1f);
+		extraPointsAcumulator.setScale(0.1f);
+		
+		gameHUD.attachChild(speedUpAcumulator);
+		gameHUD.attachChild(backupAcumulator);
+		gameHUD.attachChild(auraAcumulator);
+		gameHUD.attachChild(extraPointsAcumulator);
+	}
+
+	private Sprite createSpeedUp(int area) {
+		final Sprite speedUp = new Sprite(0, 0,
+				resourcesManager.speedUp_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+		return speedUp;
+	}
+
+	private Sprite createAura(int area) {
+		final Sprite aura = new Sprite(0, 0, resourcesManager.aura_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+		aura.setScale(0.1f);
+
+		return aura;
+	}
+
+	private Sprite createBackup(int area) {
+		final Sprite backup = new Sprite(0, 0, resourcesManager.backup_region,
+				vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+		};
+		backup.setScale(0.1f);
+		return backup;
+	}
+
+	private Sprite createExtraPoints(int area) {
+		final Sprite extraPoints = new Sprite(0, 0,
+				resourcesManager.extraPoints_region, vbom) {
+			@Override
+			protected void preDraw(GLState pGLState, Camera pCamera) {
+				super.preDraw(pGLState, pCamera);
+				pGLState.enableDither();
+			}
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				Debug.i("Extra Point !!!!");
+				return true;
+			}
+		};
+		extraPoints.setScale(0.5f);
+		return extraPoints;
+	}
+
 	private Sprite createTrunk(int area) {
 		final Sprite trunk = new Sprite(0, 0, resourcesManager.trunk_region,
 				vbom) {
@@ -541,6 +654,36 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		gameHUD.attachChild(obj);
 	}
 
+	private void throwPowerUp(int area) {
+		int objType = (int) (Math.random() * 4);
+		// TODO Remove - Only for tests
+		objType = 3;
+
+		Sprite obj;
+		switch (objType) {
+		case 0:
+			obj = createSpeedUp(area);
+			break;
+		case 1:
+			obj = createAura(area);
+			break;
+		case 2:
+			obj = createBackup(area);
+			break;
+		case 3:
+			obj = createExtraPoints(area);
+			break;
+		default:
+			return;
+		}
+
+		obj.setX(obj.getX() + obj.getWidth());
+		obj.setY(obj.getY() + obj.getHeight());
+		obj.setTag(0);
+
+		gameHUD.attachChild(obj);
+	}
+
 	private void createFlash() {
 		flash = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
@@ -565,6 +708,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		int area = (int) (Math.random() * 5);
 		if (Math.random() < 0.01) {
 			throwObject(area);
+			throwPowerUp(area);
 		}
 	}
 

@@ -60,7 +60,7 @@ public class ResourcesManager {
 	public ITextureRegion speedUp_region;
 	public ITextureRegion aura_region;
 	public ITextureRegion backup_region;
-	public ITextureRegion extraPoints_region;
+	public ITextureRegion extraPoints_region;	
 
 	public ITiledTextureRegion weapon_region;
 
