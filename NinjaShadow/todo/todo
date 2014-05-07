@@ -2,6 +2,7 @@ GameScene
 ---------
 Acumular score
 //FIXME Mostrar score al acabar
+//FIXME Gestionar mejor los tiempos de los throwObjects
 
 Mover ninja
 Mostrar arma del ninja
