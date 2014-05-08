@@ -221,6 +221,13 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		t.setAlpha(0);
 		t.setVisible(false);
 
+		final TextMenuItem scoreText = new TextMenuItem(0,
+				resourcesManager.fontScore, "Score: " + score, vbom);
+		scoreText.setPosition(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT / 2 + 75);
+		scoreText.setAlpha(0);
+		scoreText.setVisible(false);
+
 		final IMenuItem btnRestart = new ScaleMenuItemDecorator(
 				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
 						"Restart", vbom), 1.2f, 1);
@@ -247,6 +254,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				super.onModifierFinished(pItem);
 				AlphaModifier m = new AlphaModifier(1, 0, 1);
 				t.setVisible(true);
+				scoreText.setVisible(true);
 				btnRestart.setVisible(true);
 				btnExit.setVisible(true);
 				t.registerEntityModifier(m);
@@ -258,6 +266,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		gameOverScene.attachChild(back);
 		gameOverScene.attachChild(t);
+		gameOverScene.attachChild(scoreText);
 		gameOverScene.addMenuItem(btnRestart);
 		gameOverScene.addMenuItem(btnExit);
 
@@ -462,7 +471,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		}
 	}
 
-	private Sprite createSpeedUp(int area) {
+	private Sprite createSpeedUp() {
 		final Sprite speedUp = new Sprite(0, 0,
 				resourcesManager.speedUp_region, vbom) {
 			@Override
@@ -485,7 +494,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		return speedUp;
 	}
 
-	private Sprite createAura(int area) {
+	private Sprite createAura() {
 		final Sprite aura = new Sprite(0, 0, resourcesManager.aura_region, vbom) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -508,7 +517,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		return aura;
 	}
 
-	private Sprite createBackup(int area) {
+	private Sprite createBackup() {
 		final Sprite backup = new Sprite(0, 0, resourcesManager.backup_region,
 				vbom) {
 			@Override
@@ -531,7 +540,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		return backup;
 	}
 
-	private Sprite createExtraPoints(int area) {
+	private Sprite createExtraPoints() {
 		final Sprite extraPoints = new Sprite(0, 0,
 				resourcesManager.extraPoints_region, vbom) {
 			@Override
@@ -733,43 +742,88 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		gameHUD.attachChild(obj);
 	}
 
-	private void throwPowerUp(int area) {
+	private void createPowerUp() {
 		int objType = (int) (Math.random() * 4);
-		// TODO Remove - Only for tests
-//		objType = 3;
 
-		int speed;
-		Sprite obj;
 		switch (objType) {
 		case 0:
-			obj = createSpeedUp(area);
-			speed = 2;
+			if (!speedUpAcumulator.isEnabled()) {
+				throwPowerUp(createSpeedUp());
+			}
 			break;
 		case 1:
-			obj = createAura(area);
-			speed = 2;
+			if (!auraAcumulator.isEnabled()) {
+				throwPowerUp(createAura());
+			}
 			break;
 		case 2:
-			obj = createBackup(area);
-			speed = 2;
+			if (!backupAcumulator.isEnabled()) {
+				throwPowerUp(createBackup());
+			}
 			break;
 		case 3:
-			obj = createExtraPoints(area);
-			speed = 2;
+			if (!extraPointsAcumulator.isEnabled()) {
+				throwPowerUp(createExtraPoints());
+			}
 			break;
 		default:
 			return;
 		}
-		
+	}
+
+	private void throwPowerUp(Sprite obj) {
 		gameHUD.registerTouchArea(obj);
 
-		obj.setX(obj.getX() + obj.getWidth());
-		obj.setY(obj.getY() + obj.getHeight());
+		int powerUpPosition = (int) (Math.random() * 10);
+		switch (powerUpPosition) {
+		case 0:
+			obj.setX(GameActivity.CAM_WIDTH / 4 - 100);
+			obj.setY(GameActivity.CAM_HEIGHT - GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 1:
+			obj.setX(3 * GameActivity.CAM_WIDTH / 4 - 100);
+			obj.setY(GameActivity.CAM_HEIGHT - GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 2:
+			obj.setX(GameActivity.CAM_WIDTH / 5 - 100);
+			obj.setY(GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 3:
+			obj.setX(GameActivity.CAM_WIDTH / 2 - 50);
+			obj.setY(GameActivity.CAM_HEIGHT / 5);
+			break;
+		case 4:
+			obj.setX(4 * GameActivity.CAM_WIDTH / 5 - 50);
+			obj.setY(GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 5:
+			obj.setX(GameActivity.CAM_WIDTH / 4 + 100);
+			obj.setY(GameActivity.CAM_HEIGHT - GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 6:
+			obj.setX(3 * GameActivity.CAM_WIDTH / 4 + 100);
+			obj.setY(GameActivity.CAM_HEIGHT - GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 7:
+			obj.setX(GameActivity.CAM_WIDTH / 5 + 50);
+			obj.setY(GameActivity.CAM_HEIGHT / 4);
+			break;
+		case 8:
+			obj.setX(GameActivity.CAM_WIDTH / 2 + 50);
+			obj.setY(GameActivity.CAM_HEIGHT / 5);
+			break;
+		case 9:
+			obj.setX(4 * GameActivity.CAM_WIDTH / 5 + 100);
+			obj.setY(GameActivity.CAM_HEIGHT / 4);
+			break;
+		default:
+			return;
+		}
+
 		obj.setTag(0);
 
-		setObjectMovement(obj, area, speed, false);
-
 		gameHUD.attachChild(obj);
+
 	}
 
 	private void createFlash() {
@@ -795,10 +849,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		int area = (int) (Math.random() * 5);
 		if (Math.random() < 0.01) {
-			// throwObject(area);
+			throwObject(area);
 		}
 		if (Math.random() < 0.01) {
-			throwPowerUp(area);
+			// createPowerUp();
 		}
 	}
 

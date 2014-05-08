@@ -1,5 +1,9 @@
 package es.deusto.miv.ninjakai.manager;
 
+import java.io.IOException;
+
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.opengl.font.Font;
@@ -34,6 +38,7 @@ public class ResourcesManager {
 
 	public Font fontMenuItems;
 	public Font fontTitle;
+	public Font fontScore;
 	public Font fontHUD;
 
 	// ---------------------------------------------
@@ -60,7 +65,7 @@ public class ResourcesManager {
 	public ITextureRegion speedUp_region;
 	public ITextureRegion aura_region;
 	public ITextureRegion backup_region;
-	public ITextureRegion extraPoints_region;	
+	public ITextureRegion extraPoints_region;
 
 	public ITiledTextureRegion weapon_region;
 
@@ -87,6 +92,16 @@ public class ResourcesManager {
 	// ---------------------------------------------
 
 	public void loadSplashScreen() {
+		try {
+			Music initialSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/splashSound.mp3");
+			initialSound.play();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		splashTextureAtlas = new BitmapTextureAtlas(
 				activity.getTextureManager(), GameActivity.CAM_WIDTH,
@@ -168,6 +183,10 @@ public class ResourcesManager {
 		final ITexture titleFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		
+		final ITexture scoreFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
 		fontHUD = FontFactory.createStrokeFromAsset(activity.getFontManager(),
 				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
@@ -185,6 +204,12 @@ public class ResourcesManager {
 				activity.getAssets(), "DOMOI.TTF", 100, true, Color.RED, 2,
 				Color.RED);
 		fontTitle.load();
+		
+		fontScore = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), scoreFontTexture,
+				activity.getAssets(), "DOMO.TTF", 60, true, Color.RED, 2,
+				Color.BLACK);
+		fontScore.load();
 	}
 
 	private void loadGameGraphics(String weapon) {
