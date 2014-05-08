@@ -1,7 +1,7 @@
 GameScene
 ---------
 Acumular score
-//FIXME Mostrar score al acabar
+DONE Mostrar score al acabar
 //FIXME Gestionar mejor los tiempos de los throwObjects
 
 Mover ninja
@@ -9,8 +9,8 @@ Mostrar arma del ninja
 
 PowerUps
 --------
-//FIXME Fijar coordenadas para que aparezcan
-Comprobar que si tienes uno acumulado no salga el mismo
+DONE Fijar coordenadas para que aparezcan
+DONE Comprobar que si tienes uno acumulado no salga el mismo
 Hacer listeners de los PowerUps Acumulators
 
 Weapons
@@ -31,6 +31,7 @@ Enable/disable sonido
 
 Sounds
 ------
+DONE Sound en el splashScene
 General
 Arma al bloquear
 Objeto al aparecer
