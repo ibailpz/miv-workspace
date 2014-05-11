@@ -27,10 +27,15 @@ import org.andengine.util.debug.Debug;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
+import es.deusto.miv.ninjakai.data.Accumulator;
 import es.deusto.miv.ninjakai.data.IAreaObserver;
 import es.deusto.miv.ninjakai.data.Ninja;
 import es.deusto.miv.ninjakai.data.PowerUp;
 import es.deusto.miv.ninjakai.data.Weapon;
+import es.deusto.miv.ninjakai.data.powerup.Aura;
+import es.deusto.miv.ninjakai.data.powerup.Backup;
+import es.deusto.miv.ninjakai.data.powerup.ExtraPoints;
+import es.deusto.miv.ninjakai.data.powerup.SpeedUp;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
@@ -50,7 +55,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Sprite[] lifes;
 
-	private PowerUp speedUpAcumulator, auraAcumulator, backupAcumulator,
+	private Accumulator speedUpAcumulator, auraAcumulator, backupAcumulator,
 			extraPointsAcumulator;
 
 	private Area a1, a2, a3, a4, a5;
@@ -72,6 +77,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private final double multInc = 0.1;
 	private double mult = minMult;
 	private double score = 0;
+
+	public static final double powerUpTTL = 5;
+	private final double powerUpDiff = 30;
+	private double powerUpTime = 0.0;
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
@@ -384,65 +393,17 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	@SuppressWarnings("deprecation")
 	private void createPowerUpsAcumulator() {
-		speedUpAcumulator = new PowerUp(0, 0, resourcesManager.speedUp_region,
-				vbom, false) {
+		speedUpAcumulator = new Accumulator(0, 0,
+				resourcesManager.speedUp_region, vbom);
 
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (speedUpAcumulator.isEnabled()) {
-					// TODO Do effect
-					speedUpAcumulator.setEnabled(false);
-				}
-				return false;
-			}
-		};
-		speedUpAcumulator.setColor(Color.BLACK);
+		auraAcumulator = new Accumulator(0, 0, resourcesManager.aura_region,
+				vbom);
 
-		auraAcumulator = new PowerUp(0, 0, resourcesManager.aura_region, vbom,
-				false) {
+		backupAcumulator = new Accumulator(0, 0,
+				resourcesManager.backup_region, vbom);
 
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (auraAcumulator.isEnabled()) {
-					// TODO Do effect
-					auraAcumulator.setEnabled(false);
-				}
-				return false;
-			}
-		};
-		auraAcumulator.setColor(Color.BLACK);
-
-		backupAcumulator = new PowerUp(0, 0, resourcesManager.backup_region,
-				vbom, false) {
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (backupAcumulator.isEnabled()) {
-					// TODO Do effect
-					backupAcumulator.setEnabled(false);
-				}
-				return false;
-			}
-		};
-		backupAcumulator.setColor(Color.BLACK);
-
-		extraPointsAcumulator = new PowerUp(0, 0,
-				resourcesManager.extraPoints_region, vbom, false) {
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (extraPointsAcumulator.isEnabled()) {
-					// TODO Do effect
-					extraPointsAcumulator.setEnabled(false);
-				}
-				return false;
-			}
-		};
-		extraPointsAcumulator.setColor(Color.BLACK);
+		extraPointsAcumulator = new Accumulator(0, 0,
+				resourcesManager.extraPoints_region, vbom);
 
 		speedUpAcumulator.setScale(0.8f);
 		auraAcumulator.setScale(0.1f);
@@ -471,96 +432,29 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		}
 	}
 
-	private Sprite createSpeedUp() {
-		final Sprite speedUp = new Sprite(0, 0,
-				resourcesManager.speedUp_region, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					this.setTag(-1);
-					speedUpAcumulator.setEnabled(true);
-				}
-				return false;
-			}
-		};
-		speedUp.setScale(0.8f);
-		return speedUp;
+	private PowerUp createSpeedUp() {
+		SpeedUp s = new SpeedUp(0, 0, resourcesManager.speedUp_region, vbom,
+				speedUpAcumulator, 5);
+		return s;
 	}
 
-	private Sprite createAura() {
-		final Sprite aura = new Sprite(0, 0, resourcesManager.aura_region, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					this.setTag(-1);
-					auraAcumulator.setEnabled(true);
-				}
-				return false;
-			}
-		};
-		aura.setScale(0.1f);
-
-		return aura;
+	private PowerUp createAura() {
+		Aura a = new Aura(0, 0, resourcesManager.aura_region, vbom,
+				auraAcumulator, 5);
+		return a;
 	}
 
-	private Sprite createBackup() {
-		final Sprite backup = new Sprite(0, 0, resourcesManager.backup_region,
-				vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					this.setTag(-1);
-					backupAcumulator.setEnabled(true);
-				}
-				return false;
-			}
-		};
-		backup.setScale(0.2f);
-		return backup;
+	private PowerUp createBackup() {
+		Backup b = new Backup(0, 0, resourcesManager.backup_region, vbom,
+				backupAcumulator, 3);
+		return b;
 	}
 
-	private Sprite createExtraPoints() {
-		final Sprite extraPoints = new Sprite(0, 0,
-				resourcesManager.extraPoints_region, vbom) {
-			@Override
-			protected void preDraw(GLState pGLState, Camera pCamera) {
-				super.preDraw(pGLState, pCamera);
-				pGLState.enableDither();
-			}
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					this.setTag(-1);
-					extraPointsAcumulator.setEnabled(true);
-				}
-				return false;
-			}
-		};
-		extraPoints.setScale(0.2f);
-		return extraPoints;
+	private PowerUp createExtraPoints() {
+		ExtraPoints ep = new ExtraPoints(0, 0,
+				resourcesManager.extraPoints_region, vbom,
+				extraPointsAcumulator, 5);
+		return ep;
 	}
 
 	private Sprite createTrunk(int area) {
@@ -745,33 +639,35 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private void createPowerUp() {
 		int objType = (int) (Math.random() * 4);
 
+		PowerUp pu;
+		Accumulator acc = null;
+
 		switch (objType) {
 		case 0:
-			if (!speedUpAcumulator.isEnabled()) {
-				throwPowerUp(createSpeedUp());
-			}
+			acc = speedUpAcumulator;
+			pu = createSpeedUp();
 			break;
 		case 1:
-			if (!auraAcumulator.isEnabled()) {
-				throwPowerUp(createAura());
-			}
+			acc = auraAcumulator;
+			pu = createAura();
 			break;
 		case 2:
-			if (!backupAcumulator.isEnabled()) {
-				throwPowerUp(createBackup());
-			}
+			acc = backupAcumulator;
+			pu = createBackup();
 			break;
 		case 3:
-			if (!extraPointsAcumulator.isEnabled()) {
-				throwPowerUp(createExtraPoints());
-			}
+			acc = extraPointsAcumulator;
+			pu = createExtraPoints();
 			break;
 		default:
 			return;
 		}
+		if (!acc.isEnabled()) {
+			throwPowerUp(pu);
+		}
 	}
 
-	private void throwPowerUp(Sprite obj) {
+	private void throwPowerUp(PowerUp obj) {
 		gameHUD.registerTouchArea(obj);
 
 		int powerUpPosition = (int) (Math.random() * 10);
@@ -851,8 +747,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		if (Math.random() < 0.01) {
 			throwObject(area);
 		}
-		if (Math.random() < 0.01) {
-			// createPowerUp();
+		powerUpTime += pSecondsElapsed;
+		if (powerUpTime >= powerUpDiff) {
+			powerUpTime = 0;
+			createPowerUp();
 		}
 	}
 

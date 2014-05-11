@@ -36,6 +36,10 @@ public class ResourcesManager {
 	public BoundCamera camera;
 	public VertexBufferObjectManager vbom;
 
+	// ---------------------------------------------
+	// FONTS
+	// ---------------------------------------------
+
 	public Font fontMenuItems;
 	public Font fontTitle;
 	public Font fontScore;
@@ -88,18 +92,24 @@ public class ResourcesManager {
 	public ITiledTextureRegion complete_stars_region;
 
 	// ---------------------------------------------
+	// SOUNDS
+	// ---------------------------------------------
+	
+	public Music currentSound;
+	public Music splashSound;
+
+	// ---------------------------------------------
 	// CLASS LOGIC
 	// ---------------------------------------------
 
 	public void loadSplashScreen() {
 		try {
-			Music initialSound = MusicFactory.createMusicFromAsset(
+			splashSound = MusicFactory.createMusicFromAsset(
 					engine.getMusicManager(), activity, "mfx/splashSound.mp3");
-			initialSound.play();
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			Debug.e(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Debug.e(e);
 		}
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
@@ -124,20 +134,15 @@ public class ResourcesManager {
 
 	public void loadGameResources(String weapon) {
 		loadGameGraphics(weapon);
-		loadMainFonts();
 		loadGameAudio();
 	}
 
 	public void loadArmoryResources() {
 		loadArmoryGraphics();
-		loadMainFonts();
-		loadMainAudio();
 	}
 
 	public void loadSettingsResources() {
 		loadSettingsGraphics();
-		loadMainFonts();
-		loadMainAudio();
 	}
 
 	private void loadMainGraphics() {
@@ -147,14 +152,6 @@ public class ResourcesManager {
 				TextureOptions.BILINEAR);
 		menu_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mainTextureAtlas, activity, "background.png");
-
-		// play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-		// mainTextureAtlas, activity, "play.png");
-		// settings_region = BitmapTextureAtlasTextureRegionFactory
-		// .createFromAsset(mainTextureAtlas, activity, "options.png");
-		// armory_region =
-		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-		// mainTextureAtlas, activity, "armory.png");
 
 		try {
 			this.mainTextureAtlas
@@ -263,7 +260,7 @@ public class ResourcesManager {
 	}
 
 	private void loadGameAudio() {
-		// TODO Game audio
+		// TODO Load game audio
 	}
 
 	private void loadArmoryGraphics() {
@@ -315,26 +312,42 @@ public class ResourcesManager {
 			Debug.e(e);
 		}
 	}
+	
+	public void unloadSettings() {
+		unloadSettingsTextures();
+	}
+	
+	public void unloadArmory() {
+		unloadArmoryTextures();
+	}
+	
+	public void unloadGame() {
+		unloadGameTextures();
+		unloadGameAudio();
+	}
+	
+	public void unloadMain() {
+		unloadMainAudio();
+	}
 
-	public void unloadSettingsTextures() {
+	private void unloadSettingsTextures() {
 		settingsTextureAtlas.unload();
 	}
 
-	public void loadMainTextures() {
-		mainTextureAtlas.load();
-	}
-
-	public void unloadMainTextures() {
-		mainTextureAtlas.unload();
-	}
-
-	public void unloadArmoryTextures() {
+	private void unloadArmoryTextures() {
 		armoryTextureAtlas.unload();
 	}
 
-	public void unloadGameTextures() {
-		// TODO (Since we did not create any textures for game scene yet)
+	private void unloadGameTextures() {
 		gameTextureAtlas.unload();
+	}
+	
+	private void unloadGameAudio() {
+		// TODO Unload game sounds
+	}
+	
+	private void unloadMainAudio() {
+		// TODO Unload main sounds
 	}
 
 	/**

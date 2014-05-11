@@ -3,12 +3,14 @@ package es.deusto.miv.ninjakai.scene;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.util.GLState;
+import org.andengine.util.debug.Debug;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
 public class SplashScene extends BaseScene {
+	
 	private Sprite splash;
 
 	@Override
