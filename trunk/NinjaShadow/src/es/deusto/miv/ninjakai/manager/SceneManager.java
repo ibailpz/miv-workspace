@@ -78,19 +78,18 @@ public class SceneManager {
 	private void unloadCurrent() {
 		switch (currentSceneType) {
 		case SCENE_MAIN:
-			// ResourcesManager.getInstance().unloadMainTextures();
+			ResourcesManager.getInstance().unloadMain();
 			break;
 		case SCENE_GAME:
-			ResourcesManager.getInstance().unloadGameTextures();
+			ResourcesManager.getInstance().unloadGame();
 			break;
 		case SCENE_LOADING:
-			// ResourcesManager.getInstance().unloadLoadingScreen();
 			break;
 		case SCENE_ARMORY:
-			ResourcesManager.getInstance().unloadArmoryTextures();
+			ResourcesManager.getInstance().unloadArmory();
 			break;
 		case SCENE_SETTINGS:
-			ResourcesManager.getInstance().unloadSettingsTextures();
+			ResourcesManager.getInstance().unloadSettings();
 			break;
 		default:
 			break;
@@ -101,6 +100,7 @@ public class SceneManager {
 		ResourcesManager.getInstance().loadSplashScreen();
 		splashScene = new SplashScene();
 		currentScene = splashScene;
+		ResourcesManager.getInstance().splashSound.play();
 		pOnCreateSceneCallback.onCreateSceneFinished(splashScene);
 	}
 
@@ -110,31 +110,24 @@ public class SceneManager {
 		splashScene = null;
 	}
 
-	// public void createMainScene(OnCreateSceneCallback pOnCreateSceneCallback)
-	// {
 	public void createMainScene() {
 		ResourcesManager.getInstance().loadMainResources();
-		ResourcesManager.getInstance().loadMainTextures();
 		mainScene = new MainScene();
 		loadingScene = new LoadingScene();
 		SceneManager.getInstance().setScene(mainScene);
-		// pOnCreateSceneCallback.onCreateSceneFinished(mainScene);
 		disposeSplashScene();
 	}
 
 	public void loadMainScene(final Engine mEngine) {
 		currentScene.disposeScene();
-		// gameScene.disposeScene();
 
 		unloadCurrent();
-		// ResourcesManager.getInstance().unloadGameTextures();
 
 		setScene(mainScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						// ResourcesManager.getInstance().loadMainTextures();
 						setScene(mainScene);
 					}
 				}));
@@ -143,7 +136,6 @@ public class SceneManager {
 	public void loadGameScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
@@ -163,7 +155,6 @@ public class SceneManager {
 	public void loadArmoryScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
@@ -178,7 +169,6 @@ public class SceneManager {
 	public void loadSettingsScene(final Engine mEngine) {
 		unloadCurrent();
 		setScene(loadingScene);
-		// ResourcesManager.getInstance().unloadMainTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {

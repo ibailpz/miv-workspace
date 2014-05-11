@@ -71,7 +71,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
-		// TODO
+		// TODO Set weapon menu items
 		switch (pMenuItem.getID()) {
 		case KUNAI_UNLOCK:
 

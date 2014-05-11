@@ -62,16 +62,13 @@ public class GameActivity extends BaseGameActivity {
 	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback)
 			throws IOException {
 		SceneManager.getInstance().createSplashScene(pOnCreateSceneCallback);
-		// If splash screen, remove createMainScene, it will start
-		// onPopulateScene callback
-		// SceneManager.getInstance().createMainScene(pOnCreateSceneCallback);
 	}
 
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback)
 			throws IOException {
 
-		mEngine.registerUpdateHandler(new TimerHandler(2f,
+		mEngine.registerUpdateHandler(new TimerHandler(3f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);

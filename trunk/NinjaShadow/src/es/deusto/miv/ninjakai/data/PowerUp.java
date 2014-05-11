@@ -2,29 +2,23 @@ package es.deusto.miv.ninjakai.data;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.adt.color.Color;
+
+import es.deusto.miv.ninjakai.scene.GameScene;
 
 public class PowerUp extends Sprite {
 
-	private static final Color ENABLED = new Color(1, 1, 1, 1);
-	private static final Color DISABLED = Color.BLACK;
-
 	private int level = 1;
-	private boolean enabled = true;
+	private Accumulator accumulator;
+	private double ttl = 0;
 
 	public PowerUp(float pX, float pY, ITextureRegion pTextureRegion,
-			VertexBufferObjectManager pVertexBufferObjectManager) {
+			VertexBufferObjectManager pVertexBufferObjectManager, Accumulator acc) {
 		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
-	}
-
-	public PowerUp(float pX, float pY, ITextureRegion pTextureRegion,
-			VertexBufferObjectManager pVertexBufferObjectManager,
-			boolean enabled) {
-		this(pX, pY, pTextureRegion, pVertexBufferObjectManager);
-		setEnabled(enabled);
+		this.accumulator = acc;
 	}
 
 	public int getLevel() {
@@ -35,22 +29,28 @@ public class PowerUp extends Sprite {
 		this.level = level;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-		if (enabled) {
-			this.setColor(ENABLED);
-		} else {
-			this.setColor(DISABLED);
-		}
-	}
-
 	@Override
 	protected void preDraw(GLState pGLState, Camera pCamera) {
 		super.preDraw(pGLState, pCamera);
 		pGLState.enableDither();
+	}
+	
+	@Override
+	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+			float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		if (pSceneTouchEvent.isActionUp()) {
+			this.setTag(-1);
+			accumulator.setPowerUp(this);
+		}
+		return false;
+	}
+	
+	@Override
+	protected void onManagedUpdate(float pSecondsElapsed) {
+		super.onManagedUpdate(pSecondsElapsed);
+		ttl += pSecondsElapsed;
+		if (ttl >= GameScene.powerUpTTL) {
+			this.setTag(-1);
+		}
 	}
 }
