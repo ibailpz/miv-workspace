@@ -41,6 +41,7 @@ public class ResourcesManager {
 	// ---------------------------------------------
 
 	public Font fontMenuItems;
+	public Font fontArmoryMenuItems;
 	public Font fontTitle;
 	public Font fontScore;
 	public Font fontHUD;
@@ -78,6 +79,7 @@ public class ResourcesManager {
 	public ITextureRegion katana_game_region;
 
 	public ITiledTextureRegion weapon_region;
+	public ITextureRegion aura_protection_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -87,7 +89,6 @@ public class ResourcesManager {
 	public ITextureRegion kunai_armory_region;
 	public ITextureRegion stick_armory_region;
 	public ITextureRegion nunchaku_armory_region;
-	public ITextureRegion manriki_armory_region;
 	public ITextureRegion kusarigama_armory_region;
 	public ITextureRegion katana_armory_region;
 
@@ -183,6 +184,10 @@ public class ResourcesManager {
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
+		final ITexture mainArmoryFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
 		final ITexture titleFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -201,6 +206,12 @@ public class ResourcesManager {
 				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
 				Color.BLACK);
 		fontMenuItems.load();
+
+		fontArmoryMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainArmoryFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontArmoryMenuItems.load();
 
 		fontTitle = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), titleFontTexture,
@@ -255,6 +266,10 @@ public class ResourcesManager {
 		extraPoints_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "extrapoints.png");
 
+
+		aura_protection_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "aura-protection.png");
+
 		try {
 			this.gameTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -283,8 +298,6 @@ public class ResourcesManager {
 				.createFromAsset(armoryTextureAtlas, activity, "katana.png");
 		kusarigama_armory_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(armoryTextureAtlas, activity, "kusarigama.png");
-		manriki_armory_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(armoryTextureAtlas, activity, "manriki.png");
 		nunchaku_armory_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(armoryTextureAtlas, activity, "nunchaku.png");
 		stick_armory_region = BitmapTextureAtlasTextureRegionFactory

@@ -73,10 +73,12 @@ public class Kusarigama extends Weapon{
 	@Override
 	public PaintPosition getPaintPosition() {
 		int area = positions.get(0);
+		this.setRotation(0);
 		switch (area) {
 		case 0:
 			this.setX(GameActivity.CAM_WIDTH / 2);
-			this.setY(GameActivity.CAM_HEIGHT / 2 + 200);
+			this.setY(GameActivity.CAM_HEIGHT / 2 + 150);
+			this.setRotation(45);
 			break;
 		case 1:
 			this.setX(GameActivity.CAM_WIDTH / 2 + 150);

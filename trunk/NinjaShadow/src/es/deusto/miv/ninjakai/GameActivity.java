@@ -22,6 +22,8 @@ public class GameActivity extends BaseGameActivity {
 
 	public static final int CAM_WIDTH = 800;
 	public static final int CAM_HEIGHT = 480;
+	
+	public static final String WEAPON_KEY = "WeaponKey";
 
 	private BoundCamera camera;
 
