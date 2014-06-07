@@ -9,36 +9,38 @@ import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.data.PaintPosition;
 import es.deusto.miv.ninjakai.data.Weapon;
 
-public class Nunchakus extends Weapon{
+public class Nunchakus extends Weapon {
 
-	public Nunchakus(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
+	public Nunchakus(float pX, float pY,
+			ITiledTextureRegion pTiledTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		setName("Nunchakus");
 		setRank(1);
 		positions = new ArrayList<Integer>(1);
+		setScale(0.35f);
 	}
 
 	@Override
 	public void protect(int area) {
 		if (!positions.isEmpty() && !positions.contains(area)) {
-			for(int i=0; i<5; i++){
+			for (int i = 0; i < 5; i++) {
 				areaObservers.get(i).onAreaUnprotected();
 			}
 		}
 		positions.clear();
-		
-		if(area==0 || area==1){
+
+		if (area == 0 || area == 1) {
 			positions.add(0);
 			positions.add(1);
-		}else if(area==2 || area==4){
+		} else if (area == 2 || area == 4) {
 			positions.add(2);
 			positions.add(4);
-		}else
+		} else
 			positions.add(3);
-		
+
 		if (areaObservers.get(area) != null) {
-			for(Integer i: positions)
+			for (Integer i : positions)
 				areaObservers.get(i).onAreaProtected();
 		}
 		getPaintPosition();
@@ -53,30 +55,27 @@ public class Nunchakus extends Weapon{
 	public String getWeaponGraphics() {
 		return "";
 	}
-	
+
 	@Override
 	public PaintPosition getPaintPosition() {
 		int area = positions.get(0);
 		switch (area) {
 		case 0:
-			this.setX(GameActivity.CAM_WIDTH / 2 - 80);
-			this.setY(GameActivity.CAM_HEIGHT / 2 - 80);
-			break;
 		case 1:
-			this.setX(GameActivity.CAM_WIDTH / 2 + 100);
-			this.setY(GameActivity.CAM_HEIGHT / 2 - 80);
+			this.setX(GameActivity.CAM_WIDTH / 2);
+			this.setY(GameActivity.CAM_HEIGHT / 2 + 50);
+			this.setRotation(0);
 			break;
 		case 2:
-			this.setX(GameActivity.CAM_WIDTH / 2 - 80);
-			this.setY(GameActivity.CAM_HEIGHT / 2 - 200);
+		case 4:
+			this.setX(GameActivity.CAM_WIDTH / 2);
+			this.setY(GameActivity.CAM_HEIGHT / 2 - 35);
+			this.setRotation(0);
 			break;
 		case 3:
 			this.setX(GameActivity.CAM_WIDTH / 2);
-			this.setY(GameActivity.CAM_HEIGHT / 2 - 100);
-			break;
-		case 4:
-			this.setX(GameActivity.CAM_WIDTH / 2 + 80);
-			this.setY(GameActivity.CAM_HEIGHT / 2 - 200);
+			this.setY(GameActivity.CAM_HEIGHT / 2 - 225);
+			this.setRotation(90);
 			break;
 		default:
 			break;

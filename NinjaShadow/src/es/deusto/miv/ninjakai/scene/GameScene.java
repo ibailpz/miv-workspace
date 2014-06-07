@@ -9,6 +9,7 @@ import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.modifier.RotationModifier;
+import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -39,6 +40,7 @@ import es.deusto.miv.ninjakai.data.powerup.Aura;
 import es.deusto.miv.ninjakai.data.powerup.Backup;
 import es.deusto.miv.ninjakai.data.powerup.ExtraPoints;
 import es.deusto.miv.ninjakai.data.powerup.SpeedUp;
+import es.deusto.miv.ninjakai.manager.ResourcesManager;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
@@ -64,7 +66,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private Area a1, a2, a3, a4, a5;
 
 	private Rectangle flash;
-	private AlphaModifier flashModifier = new AlphaModifier(0.05f, 0, 0.2f) {
+	private AlphaModifier flashModifier = new AlphaModifier(0.1f, 0, 0.2f) {
 		@Override
 		protected void onModifierFinished(IEntity pItem) {
 			super.onModifierFinished(pItem);
@@ -87,6 +89,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private ArrayList<TimedPowerUp> timedPowerUps = new ArrayList<PowerUp.TimedPowerUp>();
 	private ArrayList<HitPowerUp> hitPowerUps = new ArrayList<PowerUp.HitPowerUp>();
+
+	private Sprite aura_protection;
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
@@ -145,6 +149,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createPowerUpsAcumulator();
 
 		gameHUD.attachChild(ninja);
+		gameHUD.attachChild(aura_protection);
 		camera.setHUD(gameHUD);
 	}
 
@@ -176,6 +181,11 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		ninja.setY(ninja.getY() + 40);
 		// TODO Load lifes from preferences
 		ninja.setLifes(3);
+
+		aura_protection = new Sprite(ninja.getX(), ninja.getY(),
+				ResourcesManager.getInstance().aura_protection_region, vbom);
+		aura_protection.setScale(0.5f);
+		aura_protection.setAlpha(0);
 	}
 
 	private MenuScene pauseScene() {
@@ -576,7 +586,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
-				obj.setTag(-1);
 				if (!hits) {
 					return;
 				}
@@ -585,6 +594,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				if (ninja.getExtraPoints() != null) {
 					m += ninja.getExtraPoints().getMultIncrease();
 				}
+
+				boolean blocked = false;
 
 				if (!ninja.getWeapon().isProtecting(area)) {
 					Debug.i("HIT!!");
@@ -598,6 +609,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						}
 					}
 					if (ninja.getAura() == null) {
+						obj.setTag(-1);
 						ninja.setLifes(ninja.getLifes() - 1);
 
 						for (int i = 0; i < lifes.length; i++) {
@@ -621,13 +633,25 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					} else {
 						Debug.i("PREVENTED!!");
 						// TODO Show Aura prevented hit
+						blocked = true;
+						AlphaModifier am = new AlphaModifier(0.5f, 0.5f, 0);
+						aura_protection.registerEntityModifier(am);
 					}
 				} else {
+					blocked = true;
 					score += pointsPerBlock * m;
 					if (mult < maxMult) {
 						mult += multInc;
 					}
-					// TODO Animation to show that object has been blocked
+				}
+				if (blocked) {
+					ScaleModifier sm = new ScaleModifier(0.2f, 1, 0) {
+
+						protected void onModifierFinished(IEntity pItem) {
+							obj.setTag(-1);
+						};
+					};
+					obj.registerEntityModifier(sm);
 				}
 				scoreText.setText(String.format(scoreString, (int) score, m));
 			}

@@ -5,6 +5,9 @@ import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.data.Weapon;
 import es.deusto.miv.ninjakai.data.Weapon.WeaponType;
@@ -140,10 +143,16 @@ public class SceneManager {
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						// TODO Load weapon and pass to resources and scene
+						SharedPreferences prefs = PreferenceManager
+								.getDefaultSharedPreferences(ResourcesManager
+										.getInstance().activity);
+						String weaponStr = prefs.getString(
+								GameActivity.WEAPON_KEY,
+								WeaponType.KUNAI.name());
+						WeaponType weapon = WeaponType.valueOf(weaponStr);
 						ResourcesManager.getInstance().loadGameResources(
-								Weapon.WeaponType.KUNAI.graphics);
-						Weapon s = Weapon.createSprite(WeaponType.KUNAI);
+								weapon.graphics);
+						Weapon s = Weapon.createSprite(weapon);
 						gameScene = new GameScene(s);
 						setScene(gameScene);
 					}
