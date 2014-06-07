@@ -1,11 +1,13 @@
 package es.deusto.miv.ninjakai.data;
 
-import java.util.ArrayList;
-
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+
+import es.deusto.miv.ninjakai.data.powerup.Aura;
+import es.deusto.miv.ninjakai.data.powerup.ExtraPoints;
+import es.deusto.miv.ninjakai.data.powerup.SpeedUp;
 
 public class Ninja extends Sprite {
 
@@ -13,7 +15,10 @@ public class Ninja extends Sprite {
 	private int lifes;
 	private float points;
 	private int bonus;
-	private ArrayList<PowerUp> powerUps;
+
+	private Aura a;
+	private ExtraPoints ep;
+	private SpeedUp su;
 
 	public Ninja(float pX, float pY, ITextureRegion pTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -27,14 +32,12 @@ public class Ninja extends Sprite {
 
 	public Ninja(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager,
-			Weapon weapon, int lifes, float points, int bonus,
-			ArrayList<PowerUp> powerUps) {
+			Weapon weapon, int lifes, float points, int bonus) {
 		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		this.weapon = weapon;
 		this.lifes = lifes;
 		this.points = points;
 		this.bonus = bonus;
-		this.powerUps = powerUps;
 	}
 
 	public Weapon getWeapon() {
@@ -69,12 +72,37 @@ public class Ninja extends Sprite {
 		this.bonus = bonus;
 	}
 
-	public ArrayList<PowerUp> getPowerUps() {
-		return powerUps;
+	public void addPowerUp(PowerUp pu) {
+		if (pu instanceof Aura) {
+			a = (Aura) pu;
+		} else if (pu instanceof ExtraPoints) {
+			ep = (ExtraPoints) pu;
+		} else if (pu instanceof SpeedUp) {
+			su = (SpeedUp) pu;
+		}
 	}
 
-	public void setPowerUps(ArrayList<PowerUp> powerUps) {
-		this.powerUps = powerUps;
+	public void removePowerUp(PowerUp pu) {
+		if (pu instanceof Aura) {
+			a = null;
+		} else if (pu instanceof ExtraPoints) {
+			ep = null;
+		} else if (pu instanceof SpeedUp) {
+			su = null;
+		}
+		pu.getAccumulator().setPowerUp(null);
+	}
+	
+	public Aura getAura() {
+		return a;
+	}
+	
+	public ExtraPoints getExtraPoints() {
+		return ep;
+	}
+	
+	public SpeedUp getSpeedUp() {
+		return su;
 	}
 
 	public void protect(int area) {

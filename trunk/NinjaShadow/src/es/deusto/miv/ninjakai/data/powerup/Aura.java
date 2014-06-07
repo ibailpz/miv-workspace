@@ -5,8 +5,9 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import es.deusto.miv.ninjakai.data.Accumulator;
 import es.deusto.miv.ninjakai.data.PowerUp;
+import es.deusto.miv.ninjakai.data.PowerUp.HitPowerUp;
 
-public class Aura extends PowerUp {
+public class Aura extends PowerUp implements HitPowerUp {
 
 	private int hits;
 
@@ -24,5 +25,14 @@ public class Aura extends PowerUp {
 
 	public void setHits(int hits) {
 		this.hits = hits;
+	}
+
+	@Override
+	public boolean newHit() {
+		hits--;
+		if (hits == 0) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -45,6 +45,10 @@ public class PowerUp extends Sprite {
 		return false;
 	}
 	
+	public Accumulator getAccumulator() {
+		return accumulator;
+	}
+	
 	@Override
 	protected void onManagedUpdate(float pSecondsElapsed) {
 		super.onManagedUpdate(pSecondsElapsed);
@@ -52,5 +56,13 @@ public class PowerUp extends Sprite {
 		if (ttl >= GameScene.powerUpTTL) {
 			this.setTag(-1);
 		}
+	}
+	
+	public interface TimedPowerUp {
+		public boolean timePassed(float time);
+	}
+	
+	public interface HitPowerUp {
+		public boolean newHit();
 	}
 }

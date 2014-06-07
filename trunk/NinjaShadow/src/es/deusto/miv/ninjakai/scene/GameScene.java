@@ -29,8 +29,11 @@ import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.data.Accumulator;
 import es.deusto.miv.ninjakai.data.IAreaObserver;
+import es.deusto.miv.ninjakai.data.IPowerUpActivated;
 import es.deusto.miv.ninjakai.data.Ninja;
 import es.deusto.miv.ninjakai.data.PowerUp;
+import es.deusto.miv.ninjakai.data.PowerUp.HitPowerUp;
+import es.deusto.miv.ninjakai.data.PowerUp.TimedPowerUp;
 import es.deusto.miv.ninjakai.data.Weapon;
 import es.deusto.miv.ninjakai.data.powerup.Aura;
 import es.deusto.miv.ninjakai.data.powerup.Backup;
@@ -40,7 +43,7 @@ import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
 
 public class GameScene extends BaseScene implements IUpdateHandler,
-		IOnMenuItemClickListener {
+		IOnMenuItemClickListener, IPowerUpActivated {
 
 	private static final int RESUME = 1;
 	private static final int RESTART = 2;
@@ -81,6 +84,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	public static final double powerUpTTL = 5;
 	private final double powerUpDiff = 30;
 	private double powerUpTime = 0.0;
+
+	private ArrayList<TimedPowerUp> timedPowerUps = new ArrayList<PowerUp.TimedPowerUp>();
+	private ArrayList<HitPowerUp> hitPowerUps = new ArrayList<PowerUp.HitPowerUp>();
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
@@ -338,8 +344,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				vbom, 3);
 
 		a5 = new Area(4 * GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, 2 * GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 2, vbom, 4);
+				GameActivity.CAM_HEIGHT / 4 + 30,
+				2 * GameActivity.CAM_WIDTH / 5,
+				GameActivity.CAM_HEIGHT / 2 - 60, vbom, 4);
 
 		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
 				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "1",
@@ -395,16 +402,16 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	@SuppressWarnings("deprecation")
 	private void createPowerUpsAcumulator() {
 		speedUpAcumulator = new Accumulator(0, 0,
-				resourcesManager.speedUp_region, vbom);
+				resourcesManager.speedUp_region, vbom, this);
 
 		auraAcumulator = new Accumulator(0, 0, resourcesManager.aura_region,
-				vbom);
+				vbom, this);
 
 		backupAcumulator = new Accumulator(0, 0,
-				resourcesManager.backup_region, vbom);
+				resourcesManager.backup_region, vbom, this);
 
 		extraPointsAcumulator = new Accumulator(0, 0,
-				resourcesManager.extraPoints_region, vbom);
+				resourcesManager.extraPoints_region, vbom, this);
 
 		speedUpAcumulator.setScale(0.8f);
 		auraAcumulator.setScale(0.1f);
@@ -435,7 +442,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private PowerUp createSpeedUp() {
 		SpeedUp s = new SpeedUp(0, 0, resourcesManager.speedUp_region, vbom,
-				speedUpAcumulator, 5);
+				speedUpAcumulator, 1.5f, 5);
 		return s;
 	}
 
@@ -454,7 +461,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private PowerUp createExtraPoints() {
 		ExtraPoints ep = new ExtraPoints(0, 0,
 				resourcesManager.extraPoints_region, vbom,
-				extraPointsAcumulator, 5);
+				extraPointsAcumulator, 1, 5);
 		return ep;
 	}
 
@@ -558,6 +565,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			break;
 		}
 
+		if (ninja.getSpeedUp() != null) {
+			speed *= ninja.getSpeedUp().getSlowerRatio();
+		}
+
 		MoveModifier modifier = new MoveModifier(speed, fromx, fromy,
 				GameActivity.CAM_WIDTH / 2 + 50 * directionX,
 				GameActivity.CAM_HEIGHT / 2 + 25 * directionY) {
@@ -569,37 +580,56 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				if (!hits) {
 					return;
 				}
+
+				double m = mult;
+				if (ninja.getExtraPoints() != null) {
+					m += ninja.getExtraPoints().getMultIncrease();
+				}
+
 				if (!ninja.getWeapon().isProtecting(area)) {
 					Debug.i("HIT!!");
-
-					ninja.setLifes(ninja.getLifes() - 1);
-
-					for (int i = 0; i < lifes.length; i++) {
-						if (lifes[i].hasParent()) {
-							lifes[i].setTag(-1);
-							flash();
-							mult = minMult;
-							Debug.i("Life " + (i + 1));
-							break;
+					for (int i = 0; i < hitPowerUps.size(); i++) {
+						if (hitPowerUps.get(i).newHit()) {
+							Debug.i("Hit power up " + hitPowerUps.get(i)
+									+ " finished");
+							ninja.removePowerUp((PowerUp) hitPowerUps.get(i));
+							hitPowerUps.remove(i);
+							i--;
 						}
 					}
+					if (ninja.getAura() == null) {
+						ninja.setLifes(ninja.getLifes() - 1);
 
-					System.out.println("Left " + ninja.getLifes());
-					if (ninja.getLifes() == 0) {
-						Debug.i("DEAD");
-						finished = true;
-						gameHUD.setChildScene(gameOverScene(), false, true,
-								true);
-						flash.setAlpha(0);
+						for (int i = 0; i < lifes.length; i++) {
+							if (lifes[i].hasParent()) {
+								lifes[i].setTag(-1);
+								flash();
+								mult = minMult;
+								Debug.i("Life " + (i + 1));
+								break;
+							}
+						}
+
+						System.out.println("Left " + ninja.getLifes());
+						if (ninja.getLifes() == 0) {
+							Debug.i("DEAD");
+							finished = true;
+							gameHUD.setChildScene(gameOverScene(), false, true,
+									true);
+							flash.setAlpha(0);
+						}
+					} else {
+						Debug.i("PREVENTED!!");
+						// TODO Show Aura prevented hit
 					}
 				} else {
-					score += pointsPerBlock * mult;
+					score += pointsPerBlock * m;
 					if (mult < maxMult) {
 						mult += multInc;
 					}
+					// TODO Animation to show that object has been blocked
 				}
-				scoreText
-						.setText(String.format(scoreString, (int) score, mult));
+				scoreText.setText(String.format(scoreString, (int) score, m));
 			}
 		};
 
@@ -744,6 +774,15 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		// For each possibly generated object, remove an old one
 		gameHUD.detachChild(-1);
 
+		for (int i = 0; i < timedPowerUps.size(); i++) {
+			if (timedPowerUps.get(i).timePassed(pSecondsElapsed)) {
+				Debug.i("Timed power up " + timedPowerUps.get(i) + " finished");
+				ninja.removePowerUp((PowerUp) timedPowerUps.get(i));
+				timedPowerUps.remove(i);
+				i--;
+			}
+		}
+
 		int area = (int) (Math.random() * 5);
 		if (Math.random() < 0.01) {
 			throwObject(area);
@@ -753,6 +792,17 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			powerUpTime = 0;
 			createPowerUp();
 		}
+	}
+
+	@Override
+	public void onPowerUpActivated(PowerUp pu) {
+		Debug.i("Power up active " + pu);
+		if (pu instanceof HitPowerUp) {
+			hitPowerUps.add((HitPowerUp) pu);
+		} else if (pu instanceof TimedPowerUp) {
+			timedPowerUps.add((TimedPowerUp) pu);
+		}
+		ninja.addPowerUp(pu);
 	}
 
 	private class Area extends Rectangle implements IAreaObserver {
