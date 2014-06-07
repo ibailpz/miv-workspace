@@ -7,7 +7,7 @@ import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.data.Weapon;
-import es.deusto.miv.ninjakai.data.weapon.Kunai;
+import es.deusto.miv.ninjakai.data.Weapon.WeaponType;
 import es.deusto.miv.ninjakai.scene.ArmoryScene;
 import es.deusto.miv.ninjakai.scene.GameScene;
 import es.deusto.miv.ninjakai.scene.LoadingScene;
@@ -142,11 +142,9 @@ public class SceneManager {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
 						// TODO Load weapon and pass to resources and scene
 						ResourcesManager.getInstance().loadGameResources(
-								Weapon.WeaponType.KUNAI.graphics);
-						Kunai k = new Kunai(-100, -100, ResourcesManager
-								.getInstance().weapon_region, ResourcesManager
-								.getInstance().vbom);
-						gameScene = new GameScene(k);
+								Weapon.WeaponType.NUNCHAKUS.graphics);
+						Weapon s = Weapon.createSprite(WeaponType.NUNCHAKUS);
+						gameScene = new GameScene(s);
 						setScene(gameScene);
 					}
 				}));

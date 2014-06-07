@@ -70,6 +70,12 @@ public class ResourcesManager {
 	public ITextureRegion aura_region;
 	public ITextureRegion backup_region;
 	public ITextureRegion extraPoints_region;
+	public ITextureRegion kunai_game_region;
+	public ITextureRegion stick_game_region;
+	public ITextureRegion nunchaku_game_region;
+	public ITextureRegion manriki_game_region;
+	public ITextureRegion kusarigama_game_region;
+	public ITextureRegion katana_game_region;
 
 	public ITiledTextureRegion weapon_region;
 
@@ -94,7 +100,7 @@ public class ResourcesManager {
 	// ---------------------------------------------
 	// SOUNDS
 	// ---------------------------------------------
-	
+
 	public Music currentSound;
 	public Music splashSound;
 
@@ -111,7 +117,7 @@ public class ResourcesManager {
 		} catch (IOException e) {
 			Debug.e(e);
 		}
-		
+
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		splashTextureAtlas = new BitmapTextureAtlas(
 				activity.getTextureManager(), GameActivity.CAM_WIDTH,
@@ -180,7 +186,7 @@ public class ResourcesManager {
 		final ITexture titleFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		
+
 		final ITexture scoreFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
@@ -192,19 +198,19 @@ public class ResourcesManager {
 
 		fontMenuItems = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), mainFontTexture,
-				activity.getAssets(), "DOMO.TTF", 60, true, Color.RED, 2,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
 				Color.BLACK);
 		fontMenuItems.load();
 
 		fontTitle = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), titleFontTexture,
-				activity.getAssets(), "DOMOI.TTF", 100, true, Color.RED, 2,
+				activity.getAssets(), "DOMOI.TTF", 80, true, Color.RED, 2,
 				Color.RED);
 		fontTitle.load();
-		
+
 		fontScore = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), scoreFontTexture,
-				activity.getAssets(), "DOMO.TTF", 60, true, Color.RED, 2,
+				activity.getAssets(), "DOMO.TTF", 40, true, Color.RED, 2,
 				Color.BLACK);
 		fontScore.load();
 	}
@@ -312,20 +318,20 @@ public class ResourcesManager {
 			Debug.e(e);
 		}
 	}
-	
+
 	public void unloadSettings() {
 		unloadSettingsTextures();
 	}
-	
+
 	public void unloadArmory() {
 		unloadArmoryTextures();
 	}
-	
+
 	public void unloadGame() {
 		unloadGameTextures();
 		unloadGameAudio();
 	}
-	
+
 	public void unloadMain() {
 		unloadMainAudio();
 	}
@@ -341,11 +347,11 @@ public class ResourcesManager {
 	private void unloadGameTextures() {
 		gameTextureAtlas.unload();
 	}
-	
+
 	private void unloadGameAudio() {
 		// TODO Unload game sounds
 	}
-	
+
 	private void unloadMainAudio() {
 		// TODO Unload main sounds
 	}

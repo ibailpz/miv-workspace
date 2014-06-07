@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import es.deusto.miv.ninjakai.GameActivity;
+import es.deusto.miv.ninjakai.data.PaintPosition;
 import es.deusto.miv.ninjakai.data.Weapon;
 
 public class Kunai extends Weapon {
@@ -27,6 +29,7 @@ public class Kunai extends Weapon {
 		if (areaObservers.get(area) != null) {
 			areaObservers.get(area).onAreaProtected();
 		}
+		getPaintPosition();
 	}
 
 	@Override
@@ -37,6 +40,36 @@ public class Kunai extends Weapon {
 	@Override
 	public String getWeaponGraphics() {
 		return "";
+	}
+
+	@Override
+	public PaintPosition getPaintPosition() {
+		int area = positions.get(0);
+		switch (area) {
+		case 0:
+			this.setX(GameActivity.CAM_WIDTH / 2 - 80);
+			this.setY(GameActivity.CAM_HEIGHT / 2 + 80);
+			break;
+		case 1:
+			this.setX(GameActivity.CAM_WIDTH / 2 + 100);
+			this.setY(GameActivity.CAM_HEIGHT / 2 + 80);
+			break;
+		case 2:
+			this.setX(GameActivity.CAM_WIDTH / 2 - 80);
+			this.setY(GameActivity.CAM_HEIGHT / 2 - 50);
+			break;
+		case 3:
+			this.setX(GameActivity.CAM_WIDTH / 2);
+			this.setY(GameActivity.CAM_HEIGHT / 2 - 100);
+			break;
+		case 4:
+			this.setX(GameActivity.CAM_WIDTH / 2 + 80);
+			this.setY(GameActivity.CAM_HEIGHT / 2 - 50);
+			break;
+		default:
+			break;
+		}
+		return null;
 	}
 
 }
