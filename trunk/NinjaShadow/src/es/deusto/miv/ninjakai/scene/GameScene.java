@@ -84,6 +84,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
+		gameHUD.attachChild(ninja.getWeapon());
 		registerWeaponAreas();
 		scoreText.setText(String.format(scoreString, (int) score, mult));
 	}
@@ -783,6 +784,5 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		public void onAreaUnprotected() {
 			this.setAlpha(0);
 		}
-
 	}
 }
