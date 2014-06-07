@@ -15,11 +15,15 @@ public class Accumulator extends Sprite {
 	private static final Color DISABLED = Color.BLACK;
 
 	private PowerUp powerUp = null;
+	private IPowerUpActivated listener = null;
+	
+	private boolean isActive = false;
 
 	public Accumulator(float pX, float pY, ITextureRegion pTextureRegion,
-			VertexBufferObjectManager pVertexBufferObjectManager) {
+			VertexBufferObjectManager pVertexBufferObjectManager, IPowerUpActivated listener) {
 		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 		setColor(DISABLED);
+		this.listener = listener;
 	}
 
 	public boolean isEnabled() {
@@ -32,6 +36,7 @@ public class Accumulator extends Sprite {
 			this.setColor(ENABLED);
 		} else {
 			this.setColor(DISABLED);
+			isActive = false;
 		}
 	}
 	
@@ -42,9 +47,11 @@ public class Accumulator extends Sprite {
 	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
-		if (isEnabled()) {
-			// TODO Do effect this.getPowerUp()...
-			setPowerUp(null);
+		if (isEnabled() && !isActive) {
+			//TODO Paint green
+			this.setColor(0, 200, 0);
+			isActive = true;
+			listener.onPowerUpActivated(getPowerUp());
 		}
 		return false;
 	}
