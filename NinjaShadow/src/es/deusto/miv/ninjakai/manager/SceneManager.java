@@ -142,8 +142,8 @@ public class SceneManager {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
 						// TODO Load weapon and pass to resources and scene
 						ResourcesManager.getInstance().loadGameResources(
-								Weapon.WeaponType.NUNCHAKUS.graphics);
-						Weapon s = Weapon.createSprite(WeaponType.NUNCHAKUS);
+								Weapon.WeaponType.KUNAI.graphics);
+						Weapon s = Weapon.createSprite(WeaponType.KUNAI);
 						gameScene = new GameScene(s);
 						setScene(gameScene);
 					}
