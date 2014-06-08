@@ -6,6 +6,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.adt.color.Color;
 
 import es.deusto.miv.ninjakai.scene.GameScene;
 
@@ -16,9 +17,11 @@ public class PowerUp extends Sprite {
 	private double ttl = 0;
 
 	public PowerUp(float pX, float pY, ITextureRegion pTextureRegion,
-			VertexBufferObjectManager pVertexBufferObjectManager, Accumulator acc) {
+			VertexBufferObjectManager pVertexBufferObjectManager,
+			Accumulator acc) {
 		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
 		this.accumulator = acc;
+		this.setColor(Color.RED);
 	}
 
 	public int getLevel() {
@@ -34,7 +37,7 @@ public class PowerUp extends Sprite {
 		super.preDraw(pGLState, pCamera);
 		pGLState.enableDither();
 	}
-	
+
 	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -44,11 +47,11 @@ public class PowerUp extends Sprite {
 		}
 		return false;
 	}
-	
+
 	public Accumulator getAccumulator() {
 		return accumulator;
 	}
-	
+
 	@Override
 	protected void onManagedUpdate(float pSecondsElapsed) {
 		super.onManagedUpdate(pSecondsElapsed);
@@ -57,11 +60,11 @@ public class PowerUp extends Sprite {
 			this.setTag(-1);
 		}
 	}
-	
+
 	public interface TimedPowerUp {
 		public boolean timePassed(float time);
 	}
-	
+
 	public interface HitPowerUp {
 		public boolean newHit();
 	}

@@ -5,8 +5,9 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import es.deusto.miv.ninjakai.data.Accumulator;
 import es.deusto.miv.ninjakai.data.PowerUp;
+import es.deusto.miv.ninjakai.data.PowerUp.HitPowerUp;
 
-public class Backup extends PowerUp {
+public class Backup extends PowerUp implements HitPowerUp {
 
 	private int blocks;
 
@@ -24,5 +25,14 @@ public class Backup extends PowerUp {
 
 	public void setBlocks(int blocks) {
 		this.blocks = blocks;
+	}
+
+	@Override
+	public boolean newHit() {
+		blocks--;
+		if (blocks == 0) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -33,7 +33,6 @@ public class GameActivity extends BaseGameActivity {
 	}
 
 	public EngineOptions onCreateEngineOptions() {
-		// TODO Set current device screen size
 		camera = new BoundCamera(0, 0, CAM_WIDTH, CAM_HEIGHT);
 		EngineOptions engineOptions = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(),
