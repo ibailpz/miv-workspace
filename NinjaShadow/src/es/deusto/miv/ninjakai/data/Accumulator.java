@@ -11,7 +11,8 @@ import org.andengine.util.adt.color.Color;
 
 public class Accumulator extends Sprite {
 
-	private static final Color ENABLED = new Color(1, 1, 1, 1);
+	private static final Color ENABLED = Color.RED;
+	private static final Color ACTIVE = Color.GREEN;
 	private static final Color DISABLED = Color.BLACK;
 
 	private PowerUp powerUp = null;
@@ -45,13 +46,17 @@ public class Accumulator extends Sprite {
 	}
 	
 	@Override
+	public void setColor(Color pColor) {
+		super.setColor(pColor);
+	}
+	
+	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		if (isEnabled() && !isActive) {
-			//TODO Paint green
-			this.setColor(0, 200, 0);
 			isActive = true;
 			listener.onPowerUpActivated(getPowerUp());
+			this.setColor(ACTIVE);
 		}
 		return false;
 	}

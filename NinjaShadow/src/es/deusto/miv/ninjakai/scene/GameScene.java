@@ -91,6 +91,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private ArrayList<HitPowerUp> hitPowerUps = new ArrayList<PowerUp.HitPowerUp>();
 
 	private Sprite aura_protection;
+	private Sprite backup;
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
@@ -135,7 +136,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	@Override
 	public void disposeScene() {
-		// TODO Detach and dispose all sprites, hud, etc.
 		camera.setHUD(null);
 	}
 
@@ -148,6 +148,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createFlash();
 		createPowerUpsAcumulator();
 
+		gameHUD.attachChild(backup);
 		gameHUD.attachChild(ninja);
 		gameHUD.attachChild(aura_protection);
 		camera.setHUD(gameHUD);
@@ -186,6 +187,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				ResourcesManager.getInstance().aura_protection_region, vbom);
 		aura_protection.setScale(0.5f);
 		aura_protection.setAlpha(0);
+
+		backup = new Sprite(ninja.getX(), ninja.getY(),
+				ResourcesManager.getInstance().backup_protection_region, vbom);
+		backup.setColor(Color.BLACK);
+		backup.setScale(0.7f);
+		backup.setAlpha(0);
 	}
 
 	private MenuScene pauseScene() {
@@ -599,16 +606,35 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 				if (!ninja.getWeapon().isProtecting(area)) {
 					Debug.i("HIT!!");
-					for (int i = 0; i < hitPowerUps.size(); i++) {
-						if (hitPowerUps.get(i).newHit()) {
-							Debug.i("Hit power up " + hitPowerUps.get(i)
-									+ " finished");
-							ninja.removePowerUp((PowerUp) hitPowerUps.get(i));
-							hitPowerUps.remove(i);
-							i--;
+					if (ninja.getBackup() != null) {
+						Debug.i("BACKUP!!");
+						blocked = true;
+						addPoints(pointsPerBlock / 2, m);
+						switch (area) {
+						case 0:
+							backup.setX(GameActivity.CAM_WIDTH / 2 - 80);
+							backup.setY(GameActivity.CAM_HEIGHT / 2 + 80);
+							break;
+						case 1:
+							backup.setX(GameActivity.CAM_WIDTH / 2 + 50);
+							backup.setY(GameActivity.CAM_HEIGHT / 2 + 80);
+							break;
+						case 2:
+							backup.setX(GameActivity.CAM_WIDTH / 2 - 80);
+							backup.setY(GameActivity.CAM_HEIGHT / 2 - 50);
+							break;
+						case 3:
+							backup.setX(GameActivity.CAM_WIDTH / 2);
+							backup.setY(GameActivity.CAM_HEIGHT / 2 - 100);
+							break;
+						case 4:
+							backup.setX(GameActivity.CAM_WIDTH / 2 + 50);
+							backup.setY(GameActivity.CAM_HEIGHT / 2 - 50);
+							break;
 						}
-					}
-					if (ninja.getAura() == null) {
+						AlphaModifier am = new AlphaModifier(0.5f, 0.5f, 0);
+						backup.registerEntityModifier(am);
+					} else if (ninja.getAura() == null) {
 						obj.setTag(-1);
 						ninja.setLifes(ninja.getLifes() - 1);
 
@@ -632,17 +658,22 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						}
 					} else {
 						Debug.i("PREVENTED!!");
-						// TODO Show Aura prevented hit
 						blocked = true;
 						AlphaModifier am = new AlphaModifier(0.5f, 0.5f, 0);
 						aura_protection.registerEntityModifier(am);
 					}
+					for (int i = 0; i < hitPowerUps.size(); i++) {
+						if (hitPowerUps.get(i).newHit()) {
+							Debug.i("Hit power up " + hitPowerUps.get(i)
+									+ " finished");
+							ninja.removePowerUp((PowerUp) hitPowerUps.get(i));
+							hitPowerUps.remove(i);
+							i--;
+						}
+					}
 				} else {
 					blocked = true;
-					score += pointsPerBlock * m;
-					if (mult < maxMult) {
-						mult += multInc;
-					}
+					addPoints(pointsPerBlock, m);
 				}
 				if (blocked) {
 					ScaleModifier sm = new ScaleModifier(0.2f, 1, 0) {
@@ -659,10 +690,16 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		obj.registerEntityModifier(modifier);
 	}
+	
+	private void addPoints(double pointsPerBlock, double m) {
+		score += pointsPerBlock * m;
+		if (mult < maxMult) {
+			mult += multInc;
+		}
+	}
 
 	private void throwObject(int area) {
-		int objType = (int) (Math.random() * 3); // TODO Change to number of
-													// objects
+		int objType = (int) (Math.random() * 3);
 		Sprite obj;
 		int speed;
 		switch (objType) {
@@ -820,7 +857,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	@Override
 	public void onPowerUpActivated(PowerUp pu) {
-		Debug.i("Power up active " + pu);
 		if (pu instanceof HitPowerUp) {
 			hitPowerUps.add((HitPowerUp) pu);
 		} else if (pu instanceof TimedPowerUp) {

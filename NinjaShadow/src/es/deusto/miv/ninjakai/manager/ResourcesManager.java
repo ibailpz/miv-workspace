@@ -80,6 +80,7 @@ public class ResourcesManager {
 
 	public ITiledTextureRegion weapon_region;
 	public ITextureRegion aura_protection_region;
+	public ITextureRegion backup_protection_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -269,6 +270,10 @@ public class ResourcesManager {
 
 		aura_protection_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "aura-protection.png");
+
+
+		backup_protection_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "backup.png");
 
 		try {
 			this.gameTextureAtlas

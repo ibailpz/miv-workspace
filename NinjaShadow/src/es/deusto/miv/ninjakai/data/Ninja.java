@@ -6,6 +6,7 @@ import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import es.deusto.miv.ninjakai.data.powerup.Aura;
+import es.deusto.miv.ninjakai.data.powerup.Backup;
 import es.deusto.miv.ninjakai.data.powerup.ExtraPoints;
 import es.deusto.miv.ninjakai.data.powerup.SpeedUp;
 
@@ -19,6 +20,7 @@ public class Ninja extends Sprite {
 	private Aura a;
 	private ExtraPoints ep;
 	private SpeedUp su;
+	private Backup b;
 
 	public Ninja(float pX, float pY, ITextureRegion pTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -79,6 +81,8 @@ public class Ninja extends Sprite {
 			ep = (ExtraPoints) pu;
 		} else if (pu instanceof SpeedUp) {
 			su = (SpeedUp) pu;
+		} else if (pu instanceof Backup) {
+			b = (Backup) pu;
 		}
 	}
 
@@ -89,6 +93,8 @@ public class Ninja extends Sprite {
 			ep = null;
 		} else if (pu instanceof SpeedUp) {
 			su = null;
+		} else if (pu instanceof Backup) {
+			b = null;
 		}
 		pu.getAccumulator().setPowerUp(null);
 	}
@@ -103,6 +109,10 @@ public class Ninja extends Sprite {
 	
 	public SpeedUp getSpeedUp() {
 		return su;
+	}
+	
+	public Backup getBackup() {
+		return b;
 	}
 
 	public void protect(int area) {
