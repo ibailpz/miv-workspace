@@ -78,10 +78,10 @@ public class SceneManager {
 		}
 	}
 
-	private void unloadCurrent() {
+	private void unloadCurrent(boolean stopSound) {
 		switch (currentSceneType) {
 		case SCENE_MAIN:
-			ResourcesManager.getInstance().unloadMain();
+			ResourcesManager.getInstance().unloadMain(stopSound);
 			break;
 		case SCENE_GAME:
 			ResourcesManager.getInstance().unloadGame();
@@ -119,25 +119,32 @@ public class SceneManager {
 		loadingScene = new LoadingScene();
 		SceneManager.getInstance().setScene(mainScene);
 		disposeSplashScene();
+		playMainSound();
 	}
 
 	public void loadMainScene(final Engine mEngine) {
 		currentScene.disposeScene();
 
-		unloadCurrent();
+		unloadCurrent(true);
 
-		setScene(mainScene);
+		setScene(loadingScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
 						setScene(mainScene);
+						playMainSound();						
 					}
 				}));
 	}
+	
+	public void playMainSound(){
+		System.out.println("Playing main sound");
+		ResourcesManager.getInstance().mainSound.play();
+	}
 
 	public void loadGameScene(final Engine mEngine) {
-		unloadCurrent();
+		unloadCurrent(true);
 		setScene(loadingScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
@@ -158,9 +165,9 @@ public class SceneManager {
 					}
 				}));
 	}
-
+	
 	public void loadArmoryScene(final Engine mEngine) {
-		unloadCurrent();
+		unloadCurrent(false);
 		setScene(loadingScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {
@@ -174,7 +181,7 @@ public class SceneManager {
 	}
 
 	public void loadSettingsScene(final Engine mEngine) {
-		unloadCurrent();
+		unloadCurrent(false);
 		setScene(loadingScene);
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f,
 				new ITimerCallback() {

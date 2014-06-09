@@ -26,8 +26,10 @@ public class SettingsScene extends BaseScene implements
 
 	private MenuScene menuChildScene;
 
-	private final int MENU_SOUND = 0;
-	private final int MENU_RESET = 1;
+	private final int MENU_TOTAL_SCORE = 0;
+	private final int MENU_HIGH_SCORE = 1;
+	private final int MENU_SOUND = 2;
+	private final int MENU_RESET = 3;
 
 	private SharedPreferences prefs;
 
@@ -51,7 +53,6 @@ public class SettingsScene extends BaseScene implements
 
 	@Override
 	public void disposeScene() {
-		// TODO Detach and dispose all sprites
 	}
 
 	public void createBackground() {
@@ -76,10 +77,10 @@ public class SettingsScene extends BaseScene implements
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(0, 0);
 
-		final IMenuItem totalScoreMenuItem = new TextMenuItem(MENU_SOUND,
+		final IMenuItem totalScoreMenuItem = new TextMenuItem(MENU_TOTAL_SCORE,
 				resourcesManager.fontMenuItems, "Experience: "
 						+ prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0), vbom);
-		final IMenuItem highScoreMenuItem = new TextMenuItem(MENU_RESET,
+		final IMenuItem highScoreMenuItem = new TextMenuItem(MENU_HIGH_SCORE,
 				resourcesManager.fontMenuItems, "High Score: "
 						+ prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0), vbom);
 		final IMenuItem soundMenuItem = new ScaleMenuItemDecorator(
@@ -120,13 +121,16 @@ public class SettingsScene extends BaseScene implements
 		case MENU_SOUND:
 			edit.putBoolean(GameActivity.SOUND_KEY, !prefs.getBoolean(GameActivity.SOUND_KEY, true));
 			createScene();
+			break;
 		case MENU_RESET:
 			edit.putInt(GameActivity.TOTAL_SCORE_KEY, 0);
 			edit.putInt(GameActivity.HIGH_SCORE_KEY, 0);
 			edit.apply();
 			createScene();
+			break;
 		default:
-			return false;
+			return false;		
 		}
+		return true;
 	}
 }

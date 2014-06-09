@@ -109,6 +109,8 @@ public class ResourcesManager {
 	public Music punchSound;
 	public Music gameOverSound;
 	public Music blockSound;
+	public Music mainSound;
+	public Music gameSound;
 
 	// ---------------------------------------------
 	// CLASS LOGIC
@@ -134,6 +136,7 @@ public class ResourcesManager {
 	}
 
 	public void unloadSplashScreen() {
+		splashSound.stop();
 		splashTextureAtlas.unload();
 		splash_region = null;
 	}
@@ -147,14 +150,17 @@ public class ResourcesManager {
 	public void loadGameResources(String weapon) {
 		loadGameGraphics(weapon);
 		loadGameAudio();
+		loadGameFonts();
 	}
 
 	public void loadArmoryResources() {
 		loadArmoryGraphics();
+		loadArmoryFonts();
 	}
 
 	public void loadSettingsResources() {
 		loadSettingsGraphics();
+		loadSettingsFonts();
 	}
 
 	private void loadMainGraphics() {
@@ -176,24 +182,19 @@ public class ResourcesManager {
 	}
 
 	private void loadMainAudio() {
-		// TODO General audio
+		try {
+			mainSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/mainSound.mid");
+			mainSound.setLooping(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void loadMainFonts() {
 		FontFactory.setAssetBasePath("font/");
-		final ITexture hudFontTexture = new BitmapTextureAtlas(
-				activity.getTextureManager(), 256, 256,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		
-		final ITexture armoryBottomFontTexture = new BitmapTextureAtlas(
-				activity.getTextureManager(), 256, 256,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
 		final ITexture mainFontTexture = new BitmapTextureAtlas(
-				activity.getTextureManager(), 256, 256,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-
-		final ITexture mainArmoryFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
@@ -201,43 +202,17 @@ public class ResourcesManager {
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
-		final ITexture scoreFontTexture = new BitmapTextureAtlas(
-				activity.getTextureManager(), 256, 256,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-
-		fontHUD = FontFactory.createStrokeFromAsset(activity.getFontManager(),
-				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
-				Color.RED, 2, Color.BLACK);
-		fontHUD.load();
-
-		fontArmoryBottom = FontFactory.createStrokeFromAsset(activity.getFontManager(),
-				armoryBottomFontTexture, activity.getAssets(), "DOMO.TTF", 30, true,
-				Color.RED, 2, Color.BLACK);
-		fontArmoryBottom.load();
-
 		fontMenuItems = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), mainFontTexture,
 				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
 				Color.BLACK);
 		fontMenuItems.load();
 
-		fontArmoryMenuItems = FontFactory.createStrokeFromAsset(
-				activity.getFontManager(), mainArmoryFontTexture,
-				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
-				Color.BLACK);
-		fontArmoryMenuItems.load();
-
 		fontTitle = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), titleFontTexture,
 				activity.getAssets(), "DOMOI.TTF", 80, true, Color.RED, 2,
 				Color.RED);
 		fontTitle.load();
-
-		fontScore = FontFactory.createStrokeFromAsset(
-				activity.getFontManager(), scoreFontTexture,
-				activity.getAssets(), "DOMO.TTF", 40, true, Color.RED, 2,
-				Color.BLACK);
-		fontScore.load();
 	}
 
 	private void loadGameGraphics(String weapon) {
@@ -301,13 +276,80 @@ public class ResourcesManager {
 		try {
 			punchSound = MusicFactory.createMusicFromAsset(
 					engine.getMusicManager(), activity, "mfx/punchSound.mp3");
-			gameOverSound = MusicFactory.createMusicFromAsset(
-					engine.getMusicManager(), activity, "mfx/gameOverSound.mp3");
+			gameOverSound = MusicFactory
+					.createMusicFromAsset(engine.getMusicManager(), activity,
+							"mfx/gameOverSound.mp3");
 			blockSound = MusicFactory.createMusicFromAsset(
 					engine.getMusicManager(), activity, "mfx/blockSound.mp3");
+
+			gameSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/gameSound.mid");
+			gameSound.setLooping(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void loadGameFonts() {
+		FontFactory.setAssetBasePath("font/");
+		final ITexture hudFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture armoryBottomFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture mainFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture mainArmoryFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture titleFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture scoreFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		fontHUD = FontFactory.createStrokeFromAsset(activity.getFontManager(),
+				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
+				Color.RED, 2, Color.BLACK);
+		fontHUD.load();
+
+		fontArmoryBottom = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), armoryBottomFontTexture,
+				activity.getAssets(), "DOMO.TTF", 30, true, Color.RED, 2,
+				Color.BLACK);
+		fontArmoryBottom.load();
+
+		fontMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontMenuItems.load();
+
+		fontArmoryMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainArmoryFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontArmoryMenuItems.load();
+
+		fontTitle = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), titleFontTexture,
+				activity.getAssets(), "DOMOI.TTF", 80, true, Color.RED, 2,
+				Color.RED);
+		fontTitle.load();
+
+		fontScore = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), scoreFontTexture,
+				activity.getAssets(), "DOMO.TTF", 40, true, Color.RED, 2,
+				Color.BLACK);
+		fontScore.load();
 	}
 
 	private void loadArmoryGraphics() {
@@ -343,6 +385,59 @@ public class ResourcesManager {
 		}
 	}
 
+	private void loadArmoryFonts() {
+		FontFactory.setAssetBasePath("font/");
+
+		final ITexture hudFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture armoryBottomFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture mainFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture mainArmoryFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture titleFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		fontArmoryBottom = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), armoryBottomFontTexture,
+				activity.getAssets(), "DOMO.TTF", 30, true, Color.RED, 2,
+				Color.BLACK);
+		fontArmoryBottom.load();
+
+		fontMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontMenuItems.load();
+
+		fontArmoryMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainArmoryFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontArmoryMenuItems.load();
+
+		fontTitle = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), titleFontTexture,
+				activity.getAssets(), "DOMOI.TTF", 80, true, Color.RED, 2,
+				Color.RED);
+		fontTitle.load();
+
+		fontHUD = FontFactory.createStrokeFromAsset(activity.getFontManager(),
+				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
+				Color.RED, 2, Color.BLACK);
+		fontHUD.load();
+	}
+
 	private void loadSettingsGraphics() {
 		BitmapTextureAtlasTextureRegionFactory
 				.setAssetBasePath("gfx/settings/");
@@ -362,6 +457,30 @@ public class ResourcesManager {
 		}
 	}
 
+	private void loadSettingsFonts() {
+		FontFactory.setAssetBasePath("font/");
+
+		final ITexture mainFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		final ITexture titleFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		fontMenuItems = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), mainFontTexture,
+				activity.getAssets(), "DOMO.TTF", 50, true, Color.RED, 2,
+				Color.BLACK);
+		fontMenuItems.load();
+
+		fontTitle = FontFactory.createStrokeFromAsset(
+				activity.getFontManager(), titleFontTexture,
+				activity.getAssets(), "DOMOI.TTF", 80, true, Color.RED, 2,
+				Color.RED);
+		fontTitle.load();
+	}
+
 	public void unloadSettings() {
 		unloadSettingsTextures();
 	}
@@ -375,8 +494,9 @@ public class ResourcesManager {
 		unloadGameAudio();
 	}
 
-	public void unloadMain() {
-		unloadMainAudio();
+	public void unloadMain(boolean stopSound) {
+		if (stopSound)
+			unloadMainAudio();
 	}
 
 	private void unloadSettingsTextures() {
@@ -392,11 +512,18 @@ public class ResourcesManager {
 	}
 
 	private void unloadGameAudio() {
-		// TODO Unload game sounds
+		if (gameSound.isPlaying()) {
+			gameSound.pause();
+			gameSound.seekTo(0);
+		}
+
 	}
 
 	private void unloadMainAudio() {
-		// TODO Unload main sounds
+		if (mainSound.isPlaying()){
+			mainSound.pause();
+			mainSound.seekTo(0);
+		}
 	}
 
 	/**
