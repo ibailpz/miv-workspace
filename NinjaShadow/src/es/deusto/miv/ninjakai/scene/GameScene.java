@@ -122,12 +122,13 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		case RESUME:
 			gameHUD.clearChildScene();
 			GameScene.this.paused = false;
+			ResourcesManager.getInstance().gameSound.resume();
 			return true;
 		case RESTART:
 			SceneManager.getInstance().loadGameScene(engine);
 			return true;
 		case EXIT:
-			SceneManager.getInstance().loadMainScene(engine);
+			SceneManager.getInstance().loadMainScene(engine);			
 			return true;
 		default:
 			return false;
@@ -154,6 +155,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createTouchAreas();
 		createFlash();
 		createPowerUpsAcumulator();
+		
+		if(!ResourcesManager.getInstance().gameSound.isPlaying())
+			ResourcesManager.getInstance().gameSound.play();
 
 		gameHUD.attachChild(backup);
 		gameHUD.attachChild(ninja);
@@ -202,7 +206,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		backup.setAlpha(0);
 	}
 
-	private MenuScene pauseScene() {
+	private MenuScene pauseScene() {		
+		ResourcesManager.getInstance().gameSound.pause();
+		
 		final MenuScene pauseGame = new MenuScene(camera);
 		int heightFix = 10;
 
@@ -243,10 +249,13 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		pauseGame.setBackgroundEnabled(false);
 		pauseGame.setOnMenuItemClickListener(this);
+		
 		return pauseGame;
 	}
 
 	private MenuScene gameOverScene() {
+		ResourcesManager.getInstance().gameSound.pause();
+
 		final MenuScene gameOverScene = new MenuScene(camera);
 		int heightFix = 10;
 
@@ -320,6 +329,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		gameOverScene.setBackgroundEnabled(false);
 		gameOverScene.setOnMenuItemClickListener(this);
+		
 		return gameOverScene;
 	}
 
