@@ -95,7 +95,7 @@ public class MainScene extends BaseScene implements IOnMenuItemClickListener {
 
 		final IMenuItem armoryMenuItem = new ScaleMenuItemDecorator(
 				new TextMenuItem(MENU_SETTINGS, resourcesManager.fontMenuItems,
-						"Settings", vbom), 1.2f, 1);
+						"Stats", vbom), 1.2f, 1);
 
 		menuChildScene.addMenuItem(playMenuItem);
 		menuChildScene.addMenuItem(settingsMenuItem);

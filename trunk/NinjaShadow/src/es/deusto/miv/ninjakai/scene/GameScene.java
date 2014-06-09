@@ -390,26 +390,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				2 * GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2 - 60, vbom, 4);
 
-		a1.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "1",
-				new TextOptions(HorizontalAlign.LEFT), vbom));
-
-		a2.attachChild(new Text(GameActivity.CAM_WIDTH / 4,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "2",
-				new TextOptions(HorizontalAlign.LEFT), vbom));
-
-		a3.attachChild(new Text(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "3",
-				new TextOptions(HorizontalAlign.LEFT), vbom));
-
-		a4.attachChild(new Text(GameActivity.CAM_WIDTH / 10,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "4",
-				new TextOptions(HorizontalAlign.LEFT), vbom));
-
-		a5.attachChild(new Text(GameActivity.CAM_WIDTH / 5,
-				GameActivity.CAM_HEIGHT / 4, resourcesManager.fontHUD, "5",
-				new TextOptions(HorizontalAlign.LEFT), vbom));
-
 		a1.setAlpha(0);
 		a2.setAlpha(0);
 		a3.setAlpha(0);
@@ -917,12 +897,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		@Override
 		public void onAreaProtected() {
-			this.setAlpha(0.1f);
+			
 		}
 
 		@Override
 		public void onAreaUnprotected() {
-			this.setAlpha(0);
+			
 		}
 	}
 }

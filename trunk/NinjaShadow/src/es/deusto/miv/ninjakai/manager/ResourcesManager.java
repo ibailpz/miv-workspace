@@ -520,7 +520,7 @@ public class ResourcesManager {
 	}
 
 	private void unloadMainAudio() {
-		if (mainSound.isPlaying()){
+		if (mainSound.isPlaying()) {
 			mainSound.pause();
 			mainSound.seekTo(0);
 		}
