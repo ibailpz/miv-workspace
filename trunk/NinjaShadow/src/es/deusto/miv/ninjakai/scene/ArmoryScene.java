@@ -37,6 +37,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	public final static String KUSARIGAMA_KEY = "KUSARIGAMA_KEY";
 	public final static String STICK_KEY = "STICK_KEY";
 
+	private final int LIFES_UNLOCK = 0;
 	private final int NUNCHAKU_UNLOCK = 1;
 	private final int KATANA_UNLOCK = 2;
 	private final int KUSARIGAMA_UNLOCK = 3;
@@ -46,6 +47,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private final int NUNCHAKU_EXP = 400;
 	private final int KUSARIGAMA_EXP = 1000;
 	private final int KATANA_EXP = 2000;
+	private final int LIFES_EXP = 2000;
 
 	private final float unlockHeightFix = 30;
 	private final float widthFix = 60;
@@ -67,6 +69,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		createChildScene();
 		loadSettings();
 		bottomMenu();
+		lifes();
 		camera.setHUD(gameHUD);
 	}
 
@@ -85,12 +88,25 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		camera.setHUD(null);
 	}
 
+	private void lifes() {
+		Sprite s = new Sprite(GameActivity.CAM_WIDTH, GameActivity.CAM_HEIGHT,
+				resourcesManager.ninja_life_region, vbom);
+		s.setPosition(s.getX() - s.getWidth(), s.getY() - s.getHeight());
+		gameHUD.attachChild(s);
+
+		Text t = new Text(s.getX() - 50, s.getY(),
+				ResourcesManager.getInstance().fontHUD, prefs.getInt(
+						GameActivity.LIFES_KEY, 3) + "X", vbom);
+		gameHUD.attachChild(t);
+	}
+
 	private void bottomMenu() {
 		Text t = new Text(10, 10, ResourcesManager.getInstance().fontHUD,
 				"Experience: " + prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0),
 				vbom);
 		t.setAnchorCenter(0, 0);
 		gameHUD.attachChild(t);
+
 	}
 
 	@Override
@@ -126,11 +142,19 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 				edit.putBoolean(KUSARIGAMA_KEY, true);
 			}
 			break;
+		case LIFES_UNLOCK:
+			int lifes = prefs.getInt(GameActivity.LIFES_KEY, 3);
+			if (lifes < 5 && total >= LIFES_EXP) {
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total
+						- LIFES_EXP);
+				edit.putInt(GameActivity.LIFES_KEY, lifes + 1);
+			}
+			break;
 		default:
 			ret = false;
 		}
 		edit.apply();
-		
+
 		if (ret) {
 			createScene();
 		}
@@ -307,6 +331,10 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 				new TextMenuItem(KATANA_UNLOCK,
 						resourcesManager.fontArmoryMenuItems, "Unlock\n"
 								+ KATANA_EXP + " exp.", vbom), 0.7f, 0.5f);
+		final IMenuItem unlockLifes = new ScaleMenuItemDecorator(
+				new TextMenuItem(LIFES_UNLOCK,
+						resourcesManager.fontArmoryMenuItems, "Extra life: "
+								+ LIFES_EXP + " exp.", vbom), 0.7f, 0.5f);
 
 		if (!prefs.getBoolean(STICK_KEY, false)) {
 			menuChildScene.addMenuItem(unlockStick);
@@ -320,6 +348,9 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		if (!prefs.getBoolean(KATANA_KEY, false)) {
 			menuChildScene.addMenuItem(unlockKatana);
 		}
+		if (prefs.getInt(GameActivity.LIFES_KEY, 3) < 5) {
+			menuChildScene.addMenuItem(unlockLifes);
+		}
 
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
@@ -332,6 +363,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 		unlockKatana.setPosition(GameActivity.CAM_WIDTH - widthFix,
 				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
+		unlockLifes.setPosition(GameActivity.CAM_WIDTH - 120, 30);
 
 		menuChildScene.setOnMenuItemClickListener(this);
 		setChildScene(menuChildScene);

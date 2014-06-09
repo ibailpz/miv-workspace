@@ -329,6 +329,10 @@ public class ResourcesManager {
 		stick_armory_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(armoryTextureAtlas, activity, "stick.png");
 
+		ninja_life_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(armoryTextureAtlas, activity,
+						"ninja-life-new.png");
+
 		try {
 			this.armoryTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(

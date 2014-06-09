@@ -187,8 +187,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		};
 		ninja.setScale(0.9f);
 		ninja.setY(ninja.getY() + 40);
-		// TODO Load lifes from preferences
-		ninja.setLifes(3);
+
+		ninja.setLifes(prefs.getInt(GameActivity.LIFES_KEY, 3));
 
 		aura_protection = new Sprite(ninja.getX(), ninja.getY(),
 				ResourcesManager.getInstance().aura_protection_region, vbom);
@@ -648,7 +648,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 							backup.setY(GameActivity.CAM_HEIGHT / 2 - 50);
 							break;
 						}
-						AlphaModifier am = new AlphaModifier(0.5f, 0.5f, 0);
+						AlphaModifier am = new AlphaModifier(0.5f, 0.7f, 0);
 						backup.registerEntityModifier(am);
 					} else if (ninja.getAura() == null) {
 						obj.setTag(-1);
@@ -877,12 +877,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	@Override
 	public void onPowerUpActivated(PowerUp pu) {
+		ninja.addPowerUp(pu);
 		if (pu instanceof HitPowerUp) {
 			hitPowerUps.add((HitPowerUp) pu);
 		} else if (pu instanceof TimedPowerUp) {
 			timedPowerUps.add((TimedPowerUp) pu);
 		}
-		ninja.addPowerUp(pu);
 	}
 
 	private class Area extends Rectangle implements IAreaObserver {

@@ -27,6 +27,7 @@ public class GameActivity extends BaseGameActivity {
 	public static final String HIGH_SCORE_KEY = "HighScoreKey";
 	public static final String TOTAL_SCORE_KEY = "TotalScoreKey";
 	public static final String SOUND_KEY = "SoundKey";
+	public static final String LIFES_KEY = "LifesKey";
 
 	private BoundCamera camera;
 
