@@ -128,7 +128,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			SceneManager.getInstance().loadGameScene(engine);
 			return true;
 		case EXIT:
-			SceneManager.getInstance().loadMainScene(engine);			
+			SceneManager.getInstance().loadMainScene(engine);
 			return true;
 		default:
 			return false;
@@ -155,8 +155,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		createTouchAreas();
 		createFlash();
 		createPowerUpsAcumulator();
-		
-		if(!ResourcesManager.getInstance().gameSound.isPlaying())
+
+		if (!ResourcesManager.getInstance().gameSound.isPlaying())
 			ResourcesManager.getInstance().gameSound.play();
 
 		gameHUD.attachChild(backup);
@@ -206,9 +206,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		backup.setAlpha(0);
 	}
 
-	private MenuScene pauseScene() {		
+	private MenuScene pauseScene() {
 		ResourcesManager.getInstance().gameSound.pause();
-		
+
 		final MenuScene pauseGame = new MenuScene(camera);
 		int heightFix = 10;
 
@@ -249,7 +249,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		pauseGame.setBackgroundEnabled(false);
 		pauseGame.setOnMenuItemClickListener(this);
-		
+
 		return pauseGame;
 	}
 
@@ -258,14 +258,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		final MenuScene gameOverScene = new MenuScene(camera);
 		int heightFix = 10;
-
-		Editor edit = prefs.edit();
-		edit.putInt(GameActivity.TOTAL_SCORE_KEY,
-				prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0)
-						+ (int) (score / 100));
-		if (prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0) < score)
-			edit.putInt(GameActivity.HIGH_SCORE_KEY, (int) score);
-		edit.apply();
 
 		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
@@ -278,8 +270,15 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		t.setAlpha(0);
 		t.setVisible(false);
 
-		final TextMenuItem scoreText = new TextMenuItem(0,
-				resourcesManager.fontScore, "Score: " + score, vbom);
+		final IMenuItem scoreText;
+
+		if ((int) score > prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0))
+			scoreText = new TextMenuItem(-1, resourcesManager.fontMenuItems,
+					"HIGH SCORE: " + (int) score, vbom);
+		else
+			scoreText = new TextMenuItem(-1, resourcesManager.fontMenuItems,
+					"Score: " + (int) score, vbom);
+
 		scoreText.setPosition(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2 + 75);
 		scoreText.setAlpha(0);
@@ -289,8 +288,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
 						"Restart", vbom), 1.2f, 1);
 		btnRestart.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + btnRestart.getHeight()
-						- heightFix - t.getHeight() / 2);
+				(GameActivity.CAM_HEIGHT / 2) + 20 - heightFix - t.getHeight() / 2);
 		btnRestart.setAlpha(0);
 		btnRestart.setVisible(false);
 
@@ -317,6 +315,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				t.registerEntityModifier(m);
 				btnRestart.registerEntityModifier(m);
 				btnExit.registerEntityModifier(m);
+				scoreText.registerEntityModifier(m);
 			}
 		};
 		back.registerEntityModifier(m);
@@ -329,7 +328,15 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		gameOverScene.setBackgroundEnabled(false);
 		gameOverScene.setOnMenuItemClickListener(this);
-		
+
+		Editor edit = prefs.edit();
+		edit.putInt(GameActivity.TOTAL_SCORE_KEY,
+				prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0)
+						+ (int) (score / 100));
+		if (prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0) < score)
+			edit.putInt(GameActivity.HIGH_SCORE_KEY, (int) score);
+		edit.apply();
+
 		return gameOverScene;
 	}
 
@@ -642,7 +649,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						backup.registerEntityModifier(am);
 					} else if (ninja.getAura() == null) {
 						obj.setTag(-1);
-						ResourcesManager.getInstance().punchSound.play();		
+						ResourcesManager.getInstance().punchSound.play();
 						ninja.setLifes(ninja.getLifes() - 1);
 
 						for (int i = 0; i < lifes.length; i++) {
@@ -897,12 +904,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		@Override
 		public void onAreaProtected() {
-			
+
 		}
 
 		@Override
 		public void onAreaUnprotected() {
-			
+
 		}
 	}
 }
