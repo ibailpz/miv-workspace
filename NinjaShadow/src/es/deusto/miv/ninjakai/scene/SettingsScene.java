@@ -68,7 +68,7 @@ public class SettingsScene extends BaseScene implements
 
 		Text t = new Text(GameActivity.CAM_WIDTH / 2,
 				4 * GameActivity.CAM_HEIGHT / 5, resourcesManager.fontTitle,
-				"Settings", vbom);
+				"Stats", vbom);
 		t.getTextOptions().setHorizontalAlign(HorizontalAlign.CENTER);
 		attachChild(t);
 	}
@@ -83,16 +83,12 @@ public class SettingsScene extends BaseScene implements
 		final IMenuItem highScoreMenuItem = new TextMenuItem(MENU_HIGH_SCORE,
 				resourcesManager.fontMenuItems, "High Score: "
 						+ prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0), vbom);
-		final IMenuItem soundMenuItem = new ScaleMenuItemDecorator(
-				new TextMenuItem(MENU_SOUND, resourcesManager.fontMenuItems,
-						"Sound", vbom), 1.2f, 1);
 		final IMenuItem resetMenuItem = new ScaleMenuItemDecorator(
 				new TextMenuItem(MENU_RESET, resourcesManager.fontMenuItems,
 						"Reset", vbom), 1.2f, 1);
 
 		menuChildScene.addMenuItem(totalScoreMenuItem);
 		menuChildScene.addMenuItem(highScoreMenuItem);
-		menuChildScene.addMenuItem(soundMenuItem);
 		menuChildScene.addMenuItem(resetMenuItem);
 
 		menuChildScene.buildAnimations();
@@ -102,8 +98,6 @@ public class SettingsScene extends BaseScene implements
 				totalScoreMenuItem.getY() - 50);
 		highScoreMenuItem.setPosition(highScoreMenuItem.getX(),
 				highScoreMenuItem.getY() - 50);
-		soundMenuItem.setPosition(soundMenuItem.getX(),
-				soundMenuItem.getY() - 50);
 		resetMenuItem.setPosition(resetMenuItem.getX(),
 				resetMenuItem.getY() - 50);
 
