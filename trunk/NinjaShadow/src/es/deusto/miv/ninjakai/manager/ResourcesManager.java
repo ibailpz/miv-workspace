@@ -116,7 +116,7 @@ public class ResourcesManager {
 	public void loadSplashScreen() {
 		try {
 			splashSound = MusicFactory.createMusicFromAsset(
-					engine.getMusicManager(), activity, "mfx/splashSound.mp3");
+					engine.getMusicManager(), activity, "mfx/ninjaKai.mp3");
 		} catch (IllegalStateException e) {
 			Debug.e(e);
 		} catch (IOException e) {
