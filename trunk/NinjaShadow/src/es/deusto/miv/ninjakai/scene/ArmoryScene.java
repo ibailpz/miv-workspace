@@ -9,6 +9,7 @@ import org.andengine.entity.scene.menu.item.TextMenuItem;
 import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.util.GLState;
 import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
@@ -30,19 +31,18 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 	private MenuScene menuChildScene;
 
-	private final int KUNAI_UNLOCK = 0;
-	private final int KUNAI_EQUIP = 1;
-	private final int NUNCHAKU_UNLOCK = 2;
-	private final int NUNCHAKU_EQUIP = 3;
-	private final int KATANA_UNLOCK = 4;
-	private final int KATANA_EQUIP = 5;
-	private final int KUSARIGAMA_UNLOCK = 6;
-	private final int KUSARIGAMA_EQUIP = 7;
-	private final int STICK_UNLOCK = 8;
-	private final int STICK_EQUIP = 9;
+	private final static String KUNAI_KEY = "KUNAI_KEY";
+	private final static String NUNCHAKU_KEY = "NUNCHAKU_KEY";
+	private final static String KATANA_KEY = "KATANA_KEY";
+	private final static String KUSARIGAMA_KEY = "KUSARIGAMA_KEY";
+	private final static String STICK_KEY = "STICK_KEY";
+
+	private final int NUNCHAKU_UNLOCK = 1;
+	private final int KATANA_UNLOCK = 2;
+	private final int KUSARIGAMA_UNLOCK = 3;
+	private final int STICK_UNLOCK = 4;
 
 	private final float unlockHeightFix = 30;
-	private final float equipHeightFix = 80;
 	private final float widthFix = 60;
 
 	private SharedPreferences prefs;
@@ -53,6 +53,8 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	public void createScene() {
 		prefs = PreferenceManager.getDefaultSharedPreferences(ResourcesManager
 				.getInstance().activity);
+		prefs.edit().putBoolean(KUNAI_KEY, true).putBoolean(STICK_KEY, true)
+				.putBoolean(NUNCHAKU_KEY, true).apply();
 		equipedType = WeaponType.valueOf(prefs.getString(
 				GameActivity.WEAPON_KEY, WeaponType.KUNAI.name()));
 		gameHUD = new HUD();
@@ -82,68 +84,26 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
-		// TODO Set weapon menu items
-		Editor edit = prefs.edit();
+		// TODO Unlock
 		boolean ret = true;
 
-		equiped.setAlpha(0.2f);
-
 		switch (pMenuItem.getID()) {
-		case KUNAI_UNLOCK:
-
-			break;
-		case KUNAI_EQUIP:
-			if (!kunai.getColor().equals(Color.BLACK)) {
-				edit.putString(GameActivity.WEAPON_KEY, WeaponType.KUNAI.name());
-				equiped = kunai;
-			}
-			break;
 		case NUNCHAKU_UNLOCK:
 
-			break;
-		case NUNCHAKU_EQUIP:
-			if (!nunchaku.getColor().equals(Color.BLACK)) {
-				edit.putString(GameActivity.WEAPON_KEY,
-						WeaponType.NUNCHAKUS.name());
-				equiped = nunchaku;
-			}
 			break;
 		case KATANA_UNLOCK:
 
 			break;
-		case KATANA_EQUIP:
-			if (!katana.getColor().equals(Color.BLACK)) {
-				edit.putString(GameActivity.WEAPON_KEY,
-						WeaponType.KATANA.name());
-				equiped = katana;
-			}
-			break;
 		case STICK_UNLOCK:
 
 			break;
-		case STICK_EQUIP:
-			if (!stick.getColor().equals(Color.BLACK)) {
-				edit.putString(GameActivity.WEAPON_KEY, WeaponType.STICK.name());
-				equiped = stick;
-			}
-			break;
 		case KUSARIGAMA_UNLOCK:
 
-			break;
-		case KUSARIGAMA_EQUIP:
-			if (!kusarigama.getColor().equals(Color.BLACK)) {
-				edit.putString(GameActivity.WEAPON_KEY,
-						WeaponType.KUSARIGAMA.name());
-				equiped = kusarigama;
-			}
 			break;
 		default:
 			ret = false;
 		}
 
-		equiped.setAlpha(1);
-
-		edit.apply();
 		return ret;
 	}
 
@@ -165,46 +125,116 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		attachChild(t);
 	}
 
+	private void equip(Sprite weapon, WeaponType type, String key) {
+		Editor edit = prefs.edit();
+		equiped.setAlpha(0.2f);
+		if (prefs.getBoolean(key, false)) {
+			edit.putString(GameActivity.WEAPON_KEY, type.name());
+			equiped = weapon;
+		}
+		equiped.setAlpha(1);
+		edit.apply();
+	}
+
 	@SuppressWarnings("deprecation")
-	public void createWeapons() {
+	private void createWeapons() {
 		kunai = new Sprite(GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.kunai_armory_region, vbom);
-		if (equipedType != WeaponType.KUNAI) {
-			kunai.setAlpha(0.2f);
-		} else {
+				resourcesManager.kunai_armory_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					equip(kunai, WeaponType.KUNAI, KUNAI_KEY);
+					return true;
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		gameHUD.registerTouchArea(kunai);
+
+		if (equipedType == WeaponType.KUNAI) {
 			equiped = kunai;
 		}
+
 		stick = new Sprite(2 * GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.stick_armory_region, vbom);
-		if (equipedType != WeaponType.STICK) {
-			stick.setAlpha(0.2f);
-		} else {
+				resourcesManager.stick_armory_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					equip(stick, WeaponType.STICK, STICK_KEY);
+					return true;
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		gameHUD.registerTouchArea(stick);
+
+		if (equipedType == WeaponType.STICK) {
 			equiped = stick;
 		}
+
 		nunchaku = new Sprite(3 * GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.nunchaku_armory_region, vbom);
-		if (equipedType != WeaponType.NUNCHAKUS) {
-			nunchaku.setAlpha(0.2f);
-		} else {
+				resourcesManager.nunchaku_armory_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					equip(nunchaku, WeaponType.NUNCHAKUS, NUNCHAKU_KEY);
+					return true;
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		gameHUD.registerTouchArea(nunchaku);
+
+		if (equipedType == WeaponType.NUNCHAKUS) {
 			equiped = nunchaku;
 		}
+
 		kusarigama = new Sprite(4 * GameActivity.CAM_WIDTH / 5,
 				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.kusarigama_armory_region, vbom);
-		if (equipedType != WeaponType.KUSARIGAMA) {
-			kusarigama.setAlpha(0.2f);
-		} else {
+				resourcesManager.kusarigama_armory_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					equip(kusarigama, WeaponType.KUSARIGAMA, KUSARIGAMA_KEY);
+					return true;
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		gameHUD.registerTouchArea(kusarigama);
+
+		if (equipedType == WeaponType.KUSARIGAMA) {
 			equiped = kusarigama;
 		}
+
 		katana = new Sprite(GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT / 2,
-				resourcesManager.katana_armory_region, vbom);
-		if (equipedType != WeaponType.KATANA) {
-			katana.setAlpha(0.2f);
-		} else {
+				resourcesManager.katana_armory_region, vbom) {
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (pSceneTouchEvent.isActionUp()) {
+					equip(katana, WeaponType.KATANA, KATANA_KEY);
+					return true;
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		gameHUD.registerTouchArea(katana);
+
+		if (equipedType == WeaponType.KATANA) {
 			equiped = katana;
 		}
 
@@ -230,92 +260,79 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(0, 0);
 
-		final IMenuItem unlockKunai = new ScaleMenuItemDecorator(
-				new TextMenuItem(KUNAI_UNLOCK,
-						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
-		final IMenuItem equipKunai = new ScaleMenuItemDecorator(
-				new TextMenuItem(KUNAI_EQUIP,
-						resourcesManager.fontArmoryMenuItems, "Equip", vbom),
-				0.7f, 0.5f);
 		final IMenuItem unlockStick = new ScaleMenuItemDecorator(
 				new TextMenuItem(STICK_UNLOCK,
 						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
-		final IMenuItem equipStick = new ScaleMenuItemDecorator(
-				new TextMenuItem(STICK_EQUIP,
-						resourcesManager.fontArmoryMenuItems, "Equip", vbom),
 				0.7f, 0.5f);
 		final IMenuItem unlockNunchaku = new ScaleMenuItemDecorator(
 				new TextMenuItem(NUNCHAKU_UNLOCK,
 						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
 				0.7f, 0.5f);
-		final IMenuItem equipNunchaku = new ScaleMenuItemDecorator(
-				new TextMenuItem(NUNCHAKU_EQUIP,
-						resourcesManager.fontArmoryMenuItems, "Equip", vbom),
-				0.7f, 0.5f);
 		final IMenuItem unlockKusarigama = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUSARIGAMA_UNLOCK,
 						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
-		final IMenuItem equipKusarigama = new ScaleMenuItemDecorator(
-				new TextMenuItem(KUSARIGAMA_EQUIP,
-						resourcesManager.fontArmoryMenuItems, "Equip", vbom),
 				0.7f, 0.5f);
 		final IMenuItem unlockKatana = new ScaleMenuItemDecorator(
 				new TextMenuItem(KATANA_UNLOCK,
 						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
 				0.7f, 0.5f);
-		final IMenuItem equipKatana = new ScaleMenuItemDecorator(
-				new TextMenuItem(KATANA_EQUIP,
-						resourcesManager.fontArmoryMenuItems, "Equip", vbom),
-				0.7f, 0.5f);
 
-		menuChildScene.addMenuItem(unlockKunai);
-		menuChildScene.addMenuItem(equipKunai);
-		menuChildScene.addMenuItem(unlockStick);
-		menuChildScene.addMenuItem(equipStick);
-		menuChildScene.addMenuItem(unlockNunchaku);
-		menuChildScene.addMenuItem(equipNunchaku);
-		menuChildScene.addMenuItem(unlockKusarigama);
-		menuChildScene.addMenuItem(equipKusarigama);
-		menuChildScene.addMenuItem(unlockKatana);
-		menuChildScene.addMenuItem(equipKatana);
+		if (!prefs.getBoolean(STICK_KEY, false)) {
+			menuChildScene.addMenuItem(unlockStick);
+		}
+		if (!prefs.getBoolean(NUNCHAKU_KEY, false)) {
+			menuChildScene.addMenuItem(unlockNunchaku);
+		}
+		if (!prefs.getBoolean(KUSARIGAMA_KEY, false)) {
+			menuChildScene.addMenuItem(unlockKusarigama);
+		}
+		if (!prefs.getBoolean(KATANA_KEY, false)) {
+			menuChildScene.addMenuItem(unlockKatana);
+		}
 
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
 
-		equipKunai.setPosition(GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
-		unlockKunai.setPosition(GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
-		equipStick.setPosition(2 * GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 		unlockStick.setPosition(2 * GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
-		equipNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 5 - widthFix,
 				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 		unlockNunchaku.setPosition(3 * GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
-		equipKusarigama.setPosition(4 * GameActivity.CAM_WIDTH / 5 - widthFix,
 				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 		unlockKusarigama.setPosition(4 * GameActivity.CAM_WIDTH / 5 - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
-		equipKatana.setPosition(GameActivity.CAM_WIDTH - widthFix,
 				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 		unlockKatana.setPosition(GameActivity.CAM_WIDTH - widthFix,
-				GameActivity.CAM_HEIGHT / 3 - equipHeightFix);
+				GameActivity.CAM_HEIGHT / 3 - unlockHeightFix);
 
 		menuChildScene.setOnMenuItemClickListener(this);
 		setChildScene(menuChildScene);
 	}
 
 	private void loadSettings() {
-		// TODO Set hidden the locked ones
-		// stick.setColor(Color.BLACK);
-		// nunchaku.setColor(Color.BLACK);
-		// manriki.setColor(Color.BLACK);
-		// kusarigama.setColor(Color.BLACK);
-		katana.setColor(Color.BLACK);
+		kunai.setAlpha(0.2f);
+		
+		if (!prefs.getBoolean(STICK_KEY, false)) {
+			stick.setColor(Color.BLACK);
+		} else {
+			stick.setAlpha(0.2f);
+		}
+		
+		if (!prefs.getBoolean(NUNCHAKU_KEY, false)) {
+			nunchaku.setColor(Color.BLACK);
+		} else {
+			nunchaku.setAlpha(0.2f);
+		}
+		
+		if (!prefs.getBoolean(KUSARIGAMA_KEY, false)) {
+			kusarigama.setColor(Color.BLACK);
+		} else {
+			kusarigama.setAlpha(0.2f);
+		}
+		
+		if (!prefs.getBoolean(KATANA_KEY, false)) {
+			katana.setColor(Color.BLACK);
+		} else {
+			katana.setAlpha(0.2f);
+		}
+		
+		equiped.setAlpha(1);
 	}
 }
