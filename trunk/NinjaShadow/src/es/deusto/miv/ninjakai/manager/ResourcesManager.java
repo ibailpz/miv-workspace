@@ -45,6 +45,7 @@ public class ResourcesManager {
 	public Font fontTitle;
 	public Font fontScore;
 	public Font fontHUD;
+	public Font fontArmoryBottom;
 
 	// ---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
@@ -183,6 +184,10 @@ public class ResourcesManager {
 		final ITexture hudFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		
+		final ITexture armoryBottomFontTexture = new BitmapTextureAtlas(
+				activity.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
 		final ITexture mainFontTexture = new BitmapTextureAtlas(
 				activity.getTextureManager(), 256, 256,
@@ -204,6 +209,11 @@ public class ResourcesManager {
 				hudFontTexture, activity.getAssets(), "DOMO.TTF", 40, true,
 				Color.RED, 2, Color.BLACK);
 		fontHUD.load();
+
+		fontArmoryBottom = FontFactory.createStrokeFromAsset(activity.getFontManager(),
+				armoryBottomFontTexture, activity.getAssets(), "DOMO.TTF", 30, true,
+				Color.RED, 2, Color.BLACK);
+		fontArmoryBottom.load();
 
 		fontMenuItems = FontFactory.createStrokeFromAsset(
 				activity.getFontManager(), mainFontTexture,
