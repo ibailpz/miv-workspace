@@ -26,8 +26,10 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
@@ -97,12 +99,15 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Sprite aura_protection;
 	private Sprite backup;
+	
+	private Vibrator vibrator;
 
 	public GameScene(Weapon weapon) {
 		ninja.setWeapon(weapon);
 		gameHUD.attachChild(ninja.getWeapon());
 		registerWeaponAreas();
 		scoreText.setText(String.format(scoreString, (int) score, mult));
+		vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	@Override
@@ -650,6 +655,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					} else if (ninja.getAura() == null) {
 						obj.setTag(-1);
 						ResourcesManager.getInstance().punchSound.play();
+						vibrator.vibrate(100);
 						ninja.setLifes(ninja.getLifes() - 1);
 
 						for (int i = 0; i < lifes.length; i++) {
@@ -665,6 +671,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						System.out.println("Left " + ninja.getLifes());
 						if (ninja.getLifes() == 0) {
 							Debug.i("DEAD");
+							vibrator.vibrate(500);
 							ResourcesManager.getInstance().gameOverSound.play();
 							finished = true;
 							gameHUD.setChildScene(gameOverScene(), false, true,
