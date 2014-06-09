@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
+import es.deusto.miv.ninjakai.data.Weapon.WeaponType;
 import es.deusto.miv.ninjakai.manager.ResourcesManager;
 import es.deusto.miv.ninjakai.manager.SceneManager;
 import es.deusto.miv.ninjakai.manager.SceneManager.SceneType;
@@ -114,11 +115,18 @@ public class SettingsScene extends BaseScene implements
 		switch (pMenuItem.getID()) {
 		case MENU_SOUND:
 			edit.putBoolean(GameActivity.SOUND_KEY, !prefs.getBoolean(GameActivity.SOUND_KEY, true));
+			edit.apply();
 			createScene();
 			break;
 		case MENU_RESET:
 			edit.putInt(GameActivity.TOTAL_SCORE_KEY, 0);
 			edit.putInt(GameActivity.HIGH_SCORE_KEY, 0);
+			edit.putInt(GameActivity.LIFES_KEY, 3);
+			edit.putBoolean(ArmoryScene.KATANA_KEY, false);
+			edit.putBoolean(ArmoryScene.KUSARIGAMA_KEY, false);
+			edit.putBoolean(ArmoryScene.NUNCHAKU_KEY, false);
+			edit.putBoolean(ArmoryScene.STICK_KEY, false);
+			edit.putString(GameActivity.WEAPON_KEY, WeaponType.KUNAI.name());
 			edit.apply();
 			createScene();
 			break;
