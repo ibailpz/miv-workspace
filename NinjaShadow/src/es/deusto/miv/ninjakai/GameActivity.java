@@ -72,7 +72,7 @@ public class GameActivity extends BaseGameActivity {
 			OnPopulateSceneCallback pOnPopulateSceneCallback)
 			throws IOException {
 
-		mEngine.registerUpdateHandler(new TimerHandler(3f,
+		mEngine.registerUpdateHandler(new TimerHandler(2.5f,
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
