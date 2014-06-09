@@ -190,7 +190,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			}
 		};
 		ninja.setScale(0.9f);
-		ninja.setY(ninja.getY() + 40);
+		ninja.setY(ninja.getY() + 20);
 
 		ninja.setLifes(prefs.getInt(GameActivity.LIFES_KEY, 3));
 
