@@ -26,6 +26,9 @@ import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import es.deusto.miv.ninjakai.GameActivity;
 import es.deusto.miv.ninjakai.base.BaseScene;
 import es.deusto.miv.ninjakai.data.Accumulator;
@@ -50,6 +53,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private static final int RESUME = 1;
 	private static final int RESTART = 2;
 	private static final int EXIT = 3;
+
+	private SharedPreferences prefs;
 
 	private HUD gameHUD;
 	private Text scoreText;
@@ -141,6 +146,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	@Override
 	public void createScene() {
+		prefs = PreferenceManager.getDefaultSharedPreferences(ResourcesManager
+				.getInstance().activity);
 		init();
 		createBackground();
 		createHUDTexts();
@@ -242,6 +249,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private MenuScene gameOverScene() {
 		final MenuScene gameOverScene = new MenuScene(camera);
 		int heightFix = 10;
+
+		Editor edit = prefs.edit();
+		edit.putInt(GameActivity.TOTAL_SCORE_KEY,
+				prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0)
+						+ (int) (score / 100));
+		if (prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0) < score)
+			edit.putInt(GameActivity.HIGH_SCORE_KEY, (int) score);
+		edit.apply();
 
 		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
@@ -609,6 +624,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					if (ninja.getBackup() != null) {
 						Debug.i("BACKUP!!");
 						blocked = true;
+						ResourcesManager.getInstance().blockSound.play();
 						addPoints(pointsPerBlock / 2, m);
 						switch (area) {
 						case 0:
@@ -636,6 +652,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						backup.registerEntityModifier(am);
 					} else if (ninja.getAura() == null) {
 						obj.setTag(-1);
+						ResourcesManager.getInstance().punchSound.play();		
 						ninja.setLifes(ninja.getLifes() - 1);
 
 						for (int i = 0; i < lifes.length; i++) {
@@ -651,6 +668,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						System.out.println("Left " + ninja.getLifes());
 						if (ninja.getLifes() == 0) {
 							Debug.i("DEAD");
+							ResourcesManager.getInstance().gameOverSound.play();
 							finished = true;
 							gameHUD.setChildScene(gameOverScene(), false, true,
 									true);
@@ -659,6 +677,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					} else {
 						Debug.i("PREVENTED!!");
 						blocked = true;
+						ResourcesManager.getInstance().blockSound.play();
 						AlphaModifier am = new AlphaModifier(0.5f, 0.5f, 0);
 						aura_protection.registerEntityModifier(am);
 					}
@@ -673,6 +692,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					}
 				} else {
 					blocked = true;
+					ResourcesManager.getInstance().blockSound.play();
 					addPoints(pointsPerBlock, m);
 				}
 				if (blocked) {
@@ -690,7 +710,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 		obj.registerEntityModifier(modifier);
 	}
-	
+
 	private void addPoints(double pointsPerBlock, double m) {
 		score += pointsPerBlock * m;
 		if (mult < maxMult) {

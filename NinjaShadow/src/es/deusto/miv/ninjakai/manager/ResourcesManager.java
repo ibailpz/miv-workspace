@@ -105,6 +105,9 @@ public class ResourcesManager {
 
 	public Music currentSound;
 	public Music splashSound;
+	public Music punchSound;
+	public Music gameOverSound;
+	public Music blockSound;
 
 	// ---------------------------------------------
 	// CLASS LOGIC
@@ -267,10 +270,9 @@ public class ResourcesManager {
 		extraPoints_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "extrapoints.png");
 
-
 		aura_protection_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(gameTextureAtlas, activity, "aura-protection.png");
-
+				.createFromAsset(gameTextureAtlas, activity,
+						"aura-protection.png");
 
 		backup_protection_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "backup.png");
@@ -286,7 +288,16 @@ public class ResourcesManager {
 	}
 
 	private void loadGameAudio() {
-		// TODO Load game audio
+		try {
+			punchSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/punchSound.mp3");
+			gameOverSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/gameOverSound.mp3");
+			blockSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/blockSound.mp3");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void loadArmoryGraphics() {
