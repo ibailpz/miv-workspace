@@ -30,7 +30,7 @@ public class Backup extends PowerUp implements HitPowerUp {
 	@Override
 	public boolean newHit() {
 		blocks--;
-		if (blocks == 0) {
+		if (blocks <= 0) {
 			return true;
 		}
 		return false;

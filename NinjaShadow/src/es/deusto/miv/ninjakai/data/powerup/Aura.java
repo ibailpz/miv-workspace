@@ -30,7 +30,7 @@ public class Aura extends PowerUp implements HitPowerUp {
 	@Override
 	public boolean newHit() {
 		hits--;
-		if (hits == 0) {
+		if (hits <= 0) {
 			return true;
 		}
 		return false;

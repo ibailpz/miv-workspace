@@ -23,7 +23,8 @@ public class Accumulator extends Sprite {
 	public Accumulator(float pX, float pY, ITextureRegion pTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager, IPowerUpActivated listener) {
 		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
-		setColor(DISABLED);
+		//setColor(DISABLED);
+		setAlpha(0);
 		this.listener = listener;
 	}
 
@@ -34,10 +35,12 @@ public class Accumulator extends Sprite {
 	public void setPowerUp(PowerUp pu) {
 		powerUp = pu;
 		if (isEnabled()) {
+			this.setAlpha(1);
 			this.setColor(ENABLED);
 		} else {
-			this.setColor(DISABLED);
 			isActive = false;
+			//this.setColor(DISABLED);
+			this.setAlpha(0);
 		}
 	}
 	

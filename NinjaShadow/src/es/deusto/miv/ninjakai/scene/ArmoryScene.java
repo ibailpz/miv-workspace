@@ -32,15 +32,20 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private MenuScene menuChildScene;
 
 	private final static String KUNAI_KEY = "KUNAI_KEY";
-	private final static String NUNCHAKU_KEY = "NUNCHAKU_KEY";
-	private final static String KATANA_KEY = "KATANA_KEY";
-	private final static String KUSARIGAMA_KEY = "KUSARIGAMA_KEY";
-	private final static String STICK_KEY = "STICK_KEY";
+	public final static String NUNCHAKU_KEY = "NUNCHAKU_KEY";
+	public final static String KATANA_KEY = "KATANA_KEY";
+	public final static String KUSARIGAMA_KEY = "KUSARIGAMA_KEY";
+	public final static String STICK_KEY = "STICK_KEY";
 
 	private final int NUNCHAKU_UNLOCK = 1;
 	private final int KATANA_UNLOCK = 2;
 	private final int KUSARIGAMA_UNLOCK = 3;
 	private final int STICK_UNLOCK = 4;
+
+	private final int STICK_EXP = 100;
+	private final int NUNCHAKU_EXP = 400;
+	private final int KUSARIGAMA_EXP = 1000;
+	private final int KATANA_EXP = 2000;
 
 	private final float unlockHeightFix = 30;
 	private final float widthFix = 60;
@@ -53,8 +58,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	public void createScene() {
 		prefs = PreferenceManager.getDefaultSharedPreferences(ResourcesManager
 				.getInstance().activity);
-		prefs.edit().putBoolean(KUNAI_KEY, true).putBoolean(STICK_KEY, true)
-				.putBoolean(NUNCHAKU_KEY, true).apply();
+		prefs.edit().putBoolean(KUNAI_KEY, true).apply();
 		equipedType = WeaponType.valueOf(prefs.getString(
 				GameActivity.WEAPON_KEY, WeaponType.KUNAI.name()));
 		gameHUD = new HUD();
@@ -62,6 +66,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		createWeapons();
 		createChildScene();
 		loadSettings();
+		bottomMenu();
 		camera.setHUD(gameHUD);
 	}
 
@@ -77,31 +82,57 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 	@Override
 	public void disposeScene() {
-		// TODO Detach and dispose all sprites
 		camera.setHUD(null);
+	}
+
+	private void bottomMenu() {
+		Text t = new Text(10, 10, ResourcesManager.getInstance().fontHUD,
+				"Experience: " + prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0),
+				vbom);
+		t.setAnchorCenter(0, 0);
+		gameHUD.attachChild(t);
 	}
 
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
-		// TODO Unlock
 		boolean ret = true;
+		Editor edit = prefs.edit();
+		int total = prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0);
 
 		switch (pMenuItem.getID()) {
 		case NUNCHAKU_UNLOCK:
-
+			if (total >= NUNCHAKU_EXP) {
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total - NUNCHAKU_EXP);
+				edit.putBoolean(NUNCHAKU_KEY, true);
+			}
 			break;
 		case KATANA_UNLOCK:
-
+			if (total >= KATANA_EXP) {
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total - KATANA_EXP);
+				edit.putBoolean(KATANA_KEY, true);
+			}
 			break;
 		case STICK_UNLOCK:
-
+			if (total >= STICK_EXP) {
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total - STICK_EXP);
+				edit.putBoolean(STICK_KEY, true);
+			}
 			break;
 		case KUSARIGAMA_UNLOCK:
-
+			if (total >= KUSARIGAMA_EXP) {
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total
+						- KUSARIGAMA_EXP);
+				edit.putBoolean(KUSARIGAMA_KEY, true);
+			}
 			break;
 		default:
 			ret = false;
+		}
+		edit.apply();
+		
+		if (ret) {
+			createScene();
 		}
 
 		return ret;
@@ -262,20 +293,20 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 		final IMenuItem unlockStick = new ScaleMenuItemDecorator(
 				new TextMenuItem(STICK_UNLOCK,
-						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
+						resourcesManager.fontArmoryMenuItems, "Unlock\n"
+								+ STICK_EXP + " exp.", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockNunchaku = new ScaleMenuItemDecorator(
 				new TextMenuItem(NUNCHAKU_UNLOCK,
-						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
+						resourcesManager.fontArmoryMenuItems, "Unlock\n"
+								+ NUNCHAKU_EXP + " exp.", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockKusarigama = new ScaleMenuItemDecorator(
 				new TextMenuItem(KUSARIGAMA_UNLOCK,
-						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
+						resourcesManager.fontArmoryMenuItems, "Unlock\n"
+								+ KUSARIGAMA_EXP + " exp.", vbom), 0.7f, 0.5f);
 		final IMenuItem unlockKatana = new ScaleMenuItemDecorator(
 				new TextMenuItem(KATANA_UNLOCK,
-						resourcesManager.fontArmoryMenuItems, "Unlock", vbom),
-				0.7f, 0.5f);
+						resourcesManager.fontArmoryMenuItems, "Unlock\n"
+								+ KATANA_EXP + " exp.", vbom), 0.7f, 0.5f);
 
 		if (!prefs.getBoolean(STICK_KEY, false)) {
 			menuChildScene.addMenuItem(unlockStick);
@@ -308,31 +339,31 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 	private void loadSettings() {
 		kunai.setAlpha(0.2f);
-		
+
 		if (!prefs.getBoolean(STICK_KEY, false)) {
 			stick.setColor(Color.BLACK);
 		} else {
 			stick.setAlpha(0.2f);
 		}
-		
+
 		if (!prefs.getBoolean(NUNCHAKU_KEY, false)) {
 			nunchaku.setColor(Color.BLACK);
 		} else {
 			nunchaku.setAlpha(0.2f);
 		}
-		
+
 		if (!prefs.getBoolean(KUSARIGAMA_KEY, false)) {
 			kusarigama.setColor(Color.BLACK);
 		} else {
 			kusarigama.setAlpha(0.2f);
 		}
-		
+
 		if (!prefs.getBoolean(KATANA_KEY, false)) {
 			katana.setColor(Color.BLACK);
 		} else {
 			katana.setAlpha(0.2f);
 		}
-		
+
 		equiped.setAlpha(1);
 	}
 }
