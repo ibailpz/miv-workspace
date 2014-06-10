@@ -1,6 +1,7 @@
 package es.deusto.miv.ninjakai.data;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -43,6 +44,7 @@ public class PowerUp extends Sprite {
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		if (pSceneTouchEvent.isActionUp()) {
 			this.setTag(-1);
+			((Scene)getParent()).unregisterTouchArea(this);
 			accumulator.setPowerUp(this);
 		}
 		return false;

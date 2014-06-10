@@ -145,8 +145,7 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		case LIFES_UNLOCK:
 			int lifes = prefs.getInt(GameActivity.LIFES_KEY, 3);
 			if (lifes < 5 && total >= LIFES_EXP) {
-				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total
-						- LIFES_EXP);
+				edit.putInt(GameActivity.TOTAL_SCORE_KEY, total - LIFES_EXP);
 				edit.putInt(GameActivity.LIFES_KEY, lifes + 1);
 			}
 			break;
@@ -306,9 +305,13 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 
 		gameHUD.attachChild(kunai);
 		gameHUD.attachChild(kusarigama);
-		gameHUD.attachChild(katana);
 		gameHUD.attachChild(stick);
 		gameHUD.attachChild(nunchaku);
+		gameHUD.attachChild(katana);
+		Text t = new Text(katana.getX(), katana.getY(),
+				ResourcesManager.getInstance().fontHUD, "Coming soon", vbom);
+		t.setRotation(-45);
+		gameHUD.attachChild(t);
 	}
 
 	private void createChildScene() {
@@ -345,9 +348,9 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 		if (!prefs.getBoolean(KUSARIGAMA_KEY, false)) {
 			menuChildScene.addMenuItem(unlockKusarigama);
 		}
-		if (!prefs.getBoolean(KATANA_KEY, false)) {
-			menuChildScene.addMenuItem(unlockKatana);
-		}
+		// if (!prefs.getBoolean(KATANA_KEY, false)) {
+		// menuChildScene.addMenuItem(unlockKatana);
+		// }
 		if (prefs.getInt(GameActivity.LIFES_KEY, 3) < 5) {
 			menuChildScene.addMenuItem(unlockLifes);
 		}

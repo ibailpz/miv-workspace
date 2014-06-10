@@ -82,6 +82,7 @@ public class ResourcesManager {
 	public ITiledTextureRegion weapon_region;
 	public ITextureRegion aura_protection_region;
 	public ITextureRegion backup_protection_region;
+	public ITextureRegion final_bomb_region;
 
 	// Settings Texture Regions
 	public ITextureRegion settings_background_region;
@@ -111,6 +112,7 @@ public class ResourcesManager {
 	public Music blockSound;
 	public Music mainSound;
 	public Music gameSound;
+	public Music kaiSound;
 
 	// ---------------------------------------------
 	// CLASS LOGIC
@@ -262,6 +264,9 @@ public class ResourcesManager {
 		backup_protection_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "backup.png");
 
+		final_bomb_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(gameTextureAtlas, activity, "backup.png");
+
 		try {
 			this.gameTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -285,6 +290,9 @@ public class ResourcesManager {
 			gameSound = MusicFactory.createMusicFromAsset(
 					engine.getMusicManager(), activity, "mfx/gameSound.mid");
 			gameSound.setLooping(true);
+
+			kaiSound = MusicFactory.createMusicFromAsset(
+					engine.getMusicManager(), activity, "mfx/kai.mp3");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
