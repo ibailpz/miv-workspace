@@ -7,9 +7,11 @@ import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.AlphaModifier;
+import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.modifier.RotationModifier;
 import org.andengine.entity.modifier.ScaleModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -99,7 +101,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private Sprite aura_protection;
 	private Sprite backup;
-	
+
+	private Sprite final_bomb;
+	private boolean finalBombEnabled = false;
+	private boolean isFinalBomb = false;
+	private Text releaseFinalBomb;
+	private int finalBombInterval = 1000;
+	private int nextFinalBomb = finalBombInterval;
+
 	private Vibrator vibrator;
 
 	public GameScene(Weapon weapon) {
@@ -107,7 +116,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		gameHUD.attachChild(ninja.getWeapon());
 		registerWeaponAreas();
 		scoreText.setText(String.format(scoreString, (int) score, mult));
-		vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+		vibrator = (Vibrator) activity
+				.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	@Override
@@ -167,6 +177,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		gameHUD.attachChild(backup);
 		gameHUD.attachChild(ninja);
 		gameHUD.attachChild(aura_protection);
+		gameHUD.attachChild(final_bomb);
 		camera.setHUD(gameHUD);
 	}
 
@@ -209,6 +220,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		backup.setColor(Color.BLACK);
 		backup.setScale(0.7f);
 		backup.setAlpha(0);
+
+		final_bomb = new Sprite(0, 0,
+				ResourcesManager.getInstance().final_bomb_region, vbom);
+		final_bomb.setColor(Color.BLACK);
+		final_bomb.setScale(0.7f);
+		final_bomb.setVisible(false);
 	}
 
 	private MenuScene pauseScene() {
@@ -293,7 +310,8 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
 						"Restart", vbom), 1.2f, 1);
 		btnRestart.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + 20 - heightFix - t.getHeight() / 2);
+				(GameActivity.CAM_HEIGHT / 2) + 20 - heightFix - t.getHeight()
+						/ 2);
 		btnRestart.setAlpha(0);
 		btnRestart.setVisible(false);
 
@@ -378,6 +396,26 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			lifes[i].setTag(4);
 			gameHUD.attachChild(lifes[i]);
 		}
+
+		releaseFinalBomb = new Text(GameActivity.CAM_WIDTH / 2,
+				GameActivity.CAM_HEIGHT,
+				ResourcesManager.getInstance().fontHUD, "Kai!", vbom) {
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (finalBombEnabled) {
+					finalBomb();
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
+		};
+		releaseFinalBomb.setPosition(releaseFinalBomb.getX(),
+				releaseFinalBomb.getY() - releaseFinalBomb.getHeight());
+		releaseFinalBomb.setVisible(false);
+		gameHUD.attachChild(releaseFinalBomb);
+		gameHUD.registerTouchArea(releaseFinalBomb);
 	}
 
 	private void createTouchAreas() {
@@ -614,6 +652,11 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 					return;
 				}
 
+				if (isFinalBomb) {
+					obj.setTag(-1);
+					return;
+				}
+
 				double m = mult;
 				if (ninja.getExtraPoints() != null) {
 					m += ninja.getExtraPoints().getMultIncrease();
@@ -661,8 +704,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						for (int i = 0; i < lifes.length; i++) {
 							if (lifes[i].hasParent()) {
 								lifes[i].setTag(-1);
-								flash();
+								flash(Color.RED);
 								mult = minMult;
+								m = mult;
 								Debug.i("Life " + (i + 1));
 								break;
 							}
@@ -719,6 +763,11 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		score += pointsPerBlock * m;
 		if (mult < maxMult) {
 			mult += multInc;
+		}
+		if (nextFinalBomb < score) {
+			nextFinalBomb += finalBombInterval;
+			finalBombEnabled = true;
+			releaseFinalBomb.setVisible(true);
 		}
 	}
 
@@ -835,23 +884,39 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		obj.setTag(0);
 
 		gameHUD.attachChild(obj);
-
 	}
 
 	private void createFlash() {
 		flash = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT, vbom);
-		flash.setColor(new Color(Color.RED.getRed(), Color.RED.getGreen(),
-				Color.RED.getBlue(), 0.4f));
 		flash.setAlpha(0);
 
 		gameHUD.attachChild(flash);
 	}
 
-	private void flash() {
+	private void flash(Color color) {
+		flash.setColor(new Color(color.getRed(), color.getGreen(), color
+				.getBlue(), 0.4f));
 		flash.registerEntityModifier(flashModifier);
 		flashModifier.reset();
+	}
+
+	private void finalBomb() {
+		finalBombEnabled = false;
+		releaseFinalBomb.setVisible(false);
+		
+		isFinalBomb = true;
+		
+		ninja.setVisible(false);
+		ninja.getWeapon().setVisible(false);
+		
+		final_bomb.reset();
+		final_bomb.resetEntityModifiers();
+		final_bomb.resetScaleCenter();
+		final_bomb.setVisible(true);
+		ResourcesManager.getInstance().kaiSound.play();
+		final_bomb.registerEntityModifier(getFinalBombModifier());
 	}
 
 	// Game loop
@@ -869,11 +934,12 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		}
 
 		int area = (int) (Math.random() * 5);
-		if (Math.random() < 0.01) {
+		if (!isFinalBomb && Math.random() < 0.01) {
 			throwObject(area);
 		}
+
 		powerUpTime += pSecondsElapsed;
-		if (powerUpTime >= powerUpDiff) {
+		if (!isFinalBomb && powerUpTime >= powerUpDiff) {
 			powerUpTime = 0;
 			createPowerUp();
 		}
@@ -918,5 +984,65 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		public void onAreaUnprotected() {
 
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private FinalBombModifier getFinalBombModifier() {
+		MoveModifier[] mm = new MoveModifier[6];
+		int heightInterval = GameActivity.CAM_HEIGHT / mm.length;
+		for (int i = 0; i < mm.length; i++) {
+			MoveModifier m;
+			
+			int height = GameActivity.CAM_HEIGHT - (heightInterval * (i + 1));
+			if (i % 2 == 0) {
+				m = new MoveModifier(0.55f,
+						-final_bomb.getWidthScaled(),
+						height,
+						GameActivity.CAM_WIDTH + final_bomb.getWidthScaled(),
+						height);
+			} else {
+				m = new MoveModifier(0.55f,
+						GameActivity.CAM_WIDTH + final_bomb.getWidthScaled(),
+						height,
+						-final_bomb.getWidthScaled(),
+						height);
+			}
+			mm[i] = m;
+		}
+		return new FinalBombModifier(mm);
+	}
+
+	private class FinalBombModifier extends SequenceEntityModifier {
+
+		private float secs = 0;
+		private ArrayList<Double> intervals = new ArrayList<Double>();
+
+		public FinalBombModifier(IEntityModifier... pEntityModifiers)
+				throws IllegalArgumentException {
+			super(pEntityModifiers);
+			for (int i = 0; i < pEntityModifiers.length; i++) {
+				intervals.add(i / 2.0);
+			}
+		}
+
+		@Override
+		protected void onModifierFinished(IEntity pItem) {
+			super.onModifierFinished(pItem);
+			ninja.setVisible(true);
+			ninja.getWeapon().setVisible(true);
+			final_bomb.setVisible(false);
+			isFinalBomb = false;
+		}
+
+		@Override
+		public float onUpdate(float pSecondsElapsed, IEntity pItem) {
+			secs += pSecondsElapsed;
+			if (!intervals.isEmpty() && intervals.get(0) < secs) {
+				intervals.remove(0);
+				flash(Color.BLACK);
+			}
+			return super.onUpdate(pSecondsElapsed, pItem);
+		}
+
 	}
 }
