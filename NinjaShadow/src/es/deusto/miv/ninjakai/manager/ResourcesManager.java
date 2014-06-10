@@ -63,7 +63,7 @@ public class ResourcesManager {
 
 	// Game Texture Regions
 	public ITextureRegion game_background_region;
-	public ITextureRegion ninja_region;
+	public ITiledTextureRegion ninja_region;
 	public ITextureRegion trunk_region;
 	public ITextureRegion shuriken_region;
 	public ITextureRegion bomb_region;
@@ -226,8 +226,8 @@ public class ResourcesManager {
 		game_background_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, activity, "forest.png");
 
-		ninja_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				gameTextureAtlas, activity, "ninja.png");
+		ninja_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+				gameTextureAtlas, activity, "ninja.png", 2, 1);
 
 		trunk_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				gameTextureAtlas, activity, "tronco.png");

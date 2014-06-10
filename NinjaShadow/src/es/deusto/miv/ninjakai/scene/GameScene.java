@@ -8,6 +8,7 @@ import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.modifier.IEntityModifier;
+import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.modifier.RotationModifier;
 import org.andengine.entity.modifier.ScaleModifier;
@@ -66,6 +67,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private boolean finished = false;
 
 	private Ninja ninja;
+	private LoopEntityModifier furiousNinja = new LoopEntityModifier(
+			new SequenceEntityModifier(new ScaleModifier(0.5f, 1, 0.9f),
+					new ScaleModifier(0.5f, 0.9f, 1)));
 
 	private Sprite[] lifes;
 
@@ -105,7 +109,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private Sprite final_bomb;
 	private boolean finalBombEnabled = false;
 	private boolean isFinalBomb = false;
-	private Text releaseFinalBomb;
 	private int finalBombInterval = 1000;
 	private int nextFinalBomb = finalBombInterval;
 
@@ -204,9 +207,21 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
 			}
+
+			@Override
+			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+				if (finalBombEnabled) {
+					finalBomb();
+				}
+				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
+						pTouchAreaLocalY);
+			}
 		};
 		ninja.setScale(0.9f);
 		ninja.setY(ninja.getY() + 20);
+		ninja.setCurrentTileIndex(0);
+		gameHUD.registerTouchArea(ninja);
 
 		ninja.setLifes(prefs.getInt(GameActivity.LIFES_KEY, 3));
 
@@ -276,6 +291,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	}
 
 	private MenuScene gameOverScene() {
+		int fadeTime = 1;
 		ResourcesManager.getInstance().gameSound.pause();
 
 		final MenuScene gameOverScene = new MenuScene(camera);
@@ -292,14 +308,34 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		t.setAlpha(0);
 		t.setVisible(false);
 
-		final IMenuItem scoreText;
+		final Text scoreText;
 
-		if ((int) score > prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0))
-			scoreText = new TextMenuItem(-1, resourcesManager.fontMenuItems,
+		final IEntityModifier modifier;
+
+		if ((int) score > prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0)) {
+			scoreText = new Text(0, 0, resourcesManager.fontMenuItems,
 					"HIGH SCORE: " + (int) score, vbom);
-		else
+			IEntityModifier[] sm = new IEntityModifier[7];
+			ScaleModifier s;
+			sm[0] = new AlphaModifier(1, 0, 1);
+			s = new ScaleModifier(0.5f, 1.0f, 0.7f);
+			for (int i = 1; i < sm.length; i++) {
+				if (i % 2 != 0) {
+					sm[i] = s.deepCopy();
+				}
+			}
+			s = new ScaleModifier(0.5f, 0.7f, 1.0f);
+			for (int i = 1; i < sm.length; i++) {
+				if (i % 2 == 0) {
+					sm[i] = s.deepCopy();
+				}
+			}
+			modifier = new SequenceEntityModifier(sm);
+		} else {
 			scoreText = new TextMenuItem(-1, resourcesManager.fontMenuItems,
 					"Score: " + (int) score, vbom);
+			modifier = new AlphaModifier(1, 0, 1);
+		}
 
 		scoreText.setPosition(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2 + 75);
@@ -326,7 +362,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		back.setAlpha(0);
 		back.setColor(new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(),
 				Color.BLACK.getBlue(), 0.5f));
-		AlphaModifier m = new AlphaModifier(1, 0, 0.5f) {
+		AlphaModifier m = new AlphaModifier(fadeTime, 0, 0.5f) {
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
@@ -338,7 +374,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				t.registerEntityModifier(m);
 				btnRestart.registerEntityModifier(m);
 				btnExit.registerEntityModifier(m);
-				scoreText.registerEntityModifier(m);
+				scoreText.registerEntityModifier(modifier);
 			}
 		};
 		back.registerEntityModifier(m);
@@ -396,26 +432,6 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			lifes[i].setTag(4);
 			gameHUD.attachChild(lifes[i]);
 		}
-
-		releaseFinalBomb = new Text(GameActivity.CAM_WIDTH / 2,
-				GameActivity.CAM_HEIGHT,
-				ResourcesManager.getInstance().fontHUD, "Kai!", vbom) {
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (finalBombEnabled) {
-					finalBomb();
-				}
-				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX,
-						pTouchAreaLocalY);
-			}
-		};
-		releaseFinalBomb.setPosition(releaseFinalBomb.getX(),
-				releaseFinalBomb.getY() - releaseFinalBomb.getHeight());
-		releaseFinalBomb.setVisible(false);
-		gameHUD.attachChild(releaseFinalBomb);
-		gameHUD.registerTouchArea(releaseFinalBomb);
 	}
 
 	private void createTouchAreas() {
@@ -767,7 +783,9 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		if (nextFinalBomb < score) {
 			nextFinalBomb += finalBombInterval;
 			finalBombEnabled = true;
-			releaseFinalBomb.setVisible(true);
+			ninja.setCurrentTileIndex(1);
+			ninja.clearEntityModifiers();
+			ninja.registerEntityModifier(furiousNinja);
 		}
 	}
 
@@ -904,13 +922,14 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 
 	private void finalBomb() {
 		finalBombEnabled = false;
-		releaseFinalBomb.setVisible(false);
-		
+
 		isFinalBomb = true;
-		
+
 		ninja.setVisible(false);
 		ninja.getWeapon().setVisible(false);
-		
+		ninja.setCurrentTileIndex(0);
+		ninja.clearEntityModifiers();
+
 		final_bomb.reset();
 		final_bomb.resetEntityModifiers();
 		final_bomb.resetScaleCenter();
@@ -992,20 +1011,16 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		int heightInterval = GameActivity.CAM_HEIGHT / mm.length;
 		for (int i = 0; i < mm.length; i++) {
 			MoveModifier m;
-			
+
 			int height = GameActivity.CAM_HEIGHT - (heightInterval * (i + 1));
 			if (i % 2 == 0) {
-				m = new MoveModifier(0.55f,
-						-final_bomb.getWidthScaled(),
-						height,
-						GameActivity.CAM_WIDTH + final_bomb.getWidthScaled(),
-						height);
+				m = new MoveModifier(0.55f, -final_bomb.getWidthScaled(),
+						height, GameActivity.CAM_WIDTH
+								+ final_bomb.getWidthScaled(), height);
 			} else {
-				m = new MoveModifier(0.55f,
-						GameActivity.CAM_WIDTH + final_bomb.getWidthScaled(),
-						height,
-						-final_bomb.getWidthScaled(),
-						height);
+				m = new MoveModifier(0.55f, GameActivity.CAM_WIDTH
+						+ final_bomb.getWidthScaled(), height,
+						-final_bomb.getWidthScaled(), height);
 			}
 			mm[i] = m;
 		}

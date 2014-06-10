@@ -43,8 +43,10 @@ public class PowerUp extends Sprite {
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		if (pSceneTouchEvent.isActionUp()) {
+			if (getParent() != null) {
+				((Scene) getParent()).unregisterTouchArea(this);
+			}
 			this.setTag(-1);
-			((Scene)getParent()).unregisterTouchArea(this);
 			accumulator.setPowerUp(this);
 		}
 		return false;
