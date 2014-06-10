@@ -1,7 +1,6 @@
 package es.deusto.miv.ninjakai.data;
 
-import org.andengine.entity.sprite.Sprite;
-import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
@@ -10,7 +9,7 @@ import es.deusto.miv.ninjakai.data.powerup.Backup;
 import es.deusto.miv.ninjakai.data.powerup.ExtraPoints;
 import es.deusto.miv.ninjakai.data.powerup.SpeedUp;
 
-public class Ninja extends Sprite {
+public class Ninja extends AnimatedSprite {
 
 	private Weapon weapon;
 	private int lifes;
@@ -21,11 +20,6 @@ public class Ninja extends Sprite {
 	private ExtraPoints ep;
 	private SpeedUp su;
 	private Backup b;
-
-	public Ninja(float pX, float pY, ITextureRegion pTextureRegion,
-			VertexBufferObjectManager pVertexBufferObjectManager) {
-		super(pX, pY, pTextureRegion, pVertexBufferObjectManager);
-	}
 
 	public Ninja(float pX, float pY, ITiledTextureRegion pTiledTextureRegion,
 			VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -98,19 +92,19 @@ public class Ninja extends Sprite {
 		}
 		pu.getAccumulator().setPowerUp(null);
 	}
-	
+
 	public Aura getAura() {
 		return a;
 	}
-	
+
 	public ExtraPoints getExtraPoints() {
 		return ep;
 	}
-	
+
 	public SpeedUp getSpeedUp() {
 		return su;
 	}
-	
+
 	public Backup getBackup() {
 		return b;
 	}
