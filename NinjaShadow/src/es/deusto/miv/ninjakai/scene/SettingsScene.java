@@ -114,7 +114,8 @@ public class SettingsScene extends BaseScene implements
 
 		switch (pMenuItem.getID()) {
 		case MENU_SOUND:
-			edit.putBoolean(GameActivity.SOUND_KEY, !prefs.getBoolean(GameActivity.SOUND_KEY, true));
+			edit.putBoolean(GameActivity.SOUND_KEY,
+					!prefs.getBoolean(GameActivity.SOUND_KEY, true));
 			edit.apply();
 			createScene();
 			break;
@@ -127,11 +128,17 @@ public class SettingsScene extends BaseScene implements
 			edit.putBoolean(ArmoryScene.NUNCHAKU_KEY, false);
 			edit.putBoolean(ArmoryScene.STICK_KEY, false);
 			edit.putString(GameActivity.WEAPON_KEY, WeaponType.KUNAI.name());
+			String save = "";
+			for (int i = 0; i < ArmoryScene.unlocks.size(); i++) {
+				save += ArmoryScene.unlocks.get(i) + ",";
+			}
+			edit.putString(ArmoryScene.ARRAY_UNLOCK_KEY,
+					save.substring(0, save.length() - 1));
 			edit.apply();
 			createScene();
 			break;
 		default:
-			return false;		
+			return false;
 		}
 		return true;
 	}
