@@ -31,7 +31,7 @@ public class GameActivity extends BaseGameActivity {
 
 	private BoundCamera camera;
 	
-	private int sound = 0; 
+	private int sound = -1; 
 
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) {
