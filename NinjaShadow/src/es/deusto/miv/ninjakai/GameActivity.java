@@ -30,6 +30,8 @@ public class GameActivity extends BaseGameActivity {
 	public static final String LIFES_KEY = "LifesKey";
 
 	private BoundCamera camera;
+	
+	private int sound = 0; 
 
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) {
@@ -88,5 +90,27 @@ public class GameActivity extends BaseGameActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		// System.exit(0);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(ResourcesManager.getInstance().mainSound.isPlaying()){
+			sound = 0;
+			ResourcesManager.getInstance().mainSound.pause();
+		}else if(ResourcesManager.getInstance().gameSound.isPlaying()){
+			sound = 1;
+			ResourcesManager.getInstance().gameSound.pause();
+		}		
+	}
+	
+	@Override
+	protected synchronized void onResume() {
+		super.onResume();
+		if(sound == 0){
+			ResourcesManager.getInstance().mainSound.resume();
+		}else if(sound == 1){
+			ResourcesManager.getInstance().gameSound.resume();
+		}
 	}
 }
