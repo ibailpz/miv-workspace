@@ -43,8 +43,8 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private final int KUSARIGAMA_UNLOCK = 3;
 	private final int STICK_UNLOCK = 4;
 
-	private final int STICK_EXP = 100;
-	private final int NUNCHAKU_EXP = 400;
+	private final int STICK_EXP = 200;
+	private final int NUNCHAKU_EXP = 600;
 	private final int KUSARIGAMA_EXP = 1000;
 	private final int KATANA_EXP = 2000;
 	private final int LIFES_EXP = 2000;

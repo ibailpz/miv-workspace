@@ -16,6 +16,7 @@ public class Stick extends Weapon{
 		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		setName("Stick");
 		setRank(1);
+		setScaleY(1.5f);
 		positions = new ArrayList<Integer>(1);
 	}
 
