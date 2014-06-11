@@ -109,7 +109,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 	private Sprite final_bomb;
 	private boolean finalBombEnabled = false;
 	private boolean isFinalBomb = false;
-	private int finalBombInterval = 1000;
+	private int finalBombInterval = 10000;
 	private int nextFinalBomb = finalBombInterval;
 
 	private Vibrator vibrator;
