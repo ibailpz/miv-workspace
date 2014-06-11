@@ -22,7 +22,7 @@ public class GameActivity extends BaseGameActivity {
 
 	public static final int CAM_WIDTH = 800;
 	public static final int CAM_HEIGHT = 480;
-	
+
 	public static final String WEAPON_KEY = "WeaponKey";
 	public static final String HIGH_SCORE_KEY = "HighScoreKey";
 	public static final String TOTAL_SCORE_KEY = "TotalScoreKey";
@@ -30,8 +30,8 @@ public class GameActivity extends BaseGameActivity {
 	public static final String LIFES_KEY = "LifesKey";
 
 	private BoundCamera camera;
-	
-	private int sound = -1; 
+
+	private int sound = -1;
 
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) {
@@ -85,31 +85,34 @@ public class GameActivity extends BaseGameActivity {
 
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		// System.exit(0);
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if(ResourcesManager.getInstance().mainSound.isPlaying()){
+		if (ResourcesManager.getInstance().mainSound != null
+				&& ResourcesManager.getInstance().mainSound.isPlaying()) {
 			sound = 0;
 			ResourcesManager.getInstance().mainSound.pause();
-		}else if(ResourcesManager.getInstance().gameSound.isPlaying()){
+		} else if (ResourcesManager.getInstance().gameSound != null
+				&& ResourcesManager.getInstance().gameSound.isPlaying()) {
 			sound = 1;
 			ResourcesManager.getInstance().gameSound.pause();
-		}		
+		}
 	}
-	
+
 	@Override
 	protected synchronized void onResume() {
 		super.onResume();
-		if(sound == 0){
+		if (ResourcesManager.getInstance().mainSound != null && sound == 0) {
 			ResourcesManager.getInstance().mainSound.resume();
-		}else if(sound == 1){
+		} else if (ResourcesManager.getInstance().gameSound != null
+				&& sound == 1) {
 			ResourcesManager.getInstance().gameSound.resume();
 		}
 	}
