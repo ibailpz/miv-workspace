@@ -1,5 +1,7 @@
 package es.deusto.miv.ninjakai.scene;
 
+import java.util.ArrayList;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.scene.menu.MenuScene;
@@ -43,11 +45,11 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private final int KUSARIGAMA_UNLOCK = 3;
 	private final int STICK_UNLOCK = 4;
 
-	private final int STICK_EXP = 200;
-	private final int NUNCHAKU_EXP = 600;
-	private final int KUSARIGAMA_EXP = 1000;
-	private final int KATANA_EXP = 2000;
-	private final int LIFES_EXP = 2000;
+	private static final int STICK_EXP = 10;
+	private static final int NUNCHAKU_EXP = 600;
+	private static final int KUSARIGAMA_EXP = 1000;
+	private static final int KATANA_EXP = 2000;
+	private static final int LIFES_EXP = 2000;
 
 	private final float unlockHeightFix = 30;
 	private final float widthFix = 60;
@@ -55,6 +57,17 @@ public class ArmoryScene extends BaseScene implements IOnMenuItemClickListener {
 	private SharedPreferences prefs;
 	private WeaponType equipedType;
 	private Sprite equiped;
+
+	public static final ArrayList<Integer> unlocks;
+	public static final String ARRAY_UNLOCK_KEY = "ARRAY_UNLOCK_KEY";
+
+	static {
+		unlocks = new ArrayList<Integer>(4);
+		unlocks.add(STICK_EXP);
+		unlocks.add(NUNCHAKU_EXP);
+		unlocks.add(KUSARIGAMA_EXP);
+		unlocks.add(KATANA_EXP);
+	}
 
 	@Override
 	public void createScene() {

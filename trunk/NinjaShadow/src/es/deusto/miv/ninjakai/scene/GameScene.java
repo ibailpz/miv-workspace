@@ -295,18 +295,18 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		ResourcesManager.getInstance().gameSound.pause();
 
 		final MenuScene gameOverScene = new MenuScene(camera);
-		int heightFix = 10;
+		int heightFix = 50;
 
 		final Rectangle back = new Rectangle(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT / 2, GameActivity.CAM_WIDTH,
 				GameActivity.CAM_HEIGHT, vbom);
 
-		final Text t = new Text(GameActivity.CAM_WIDTH / 2,
+		final Text gameOver = new Text(GameActivity.CAM_WIDTH / 2,
 				GameActivity.CAM_HEIGHT, resourcesManager.fontTitle,
 				"Game Over", vbom);
-		t.setY(t.getY() - heightFix - t.getHeight() / 2);
-		t.setAlpha(0);
-		t.setVisible(false);
+		gameOver.setY(gameOver.getY() - gameOver.getHeight() / 2);
+		gameOver.setAlpha(0);
+		gameOver.setVisible(false);
 
 		final Text scoreText;
 
@@ -345,9 +345,10 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		final IMenuItem btnRestart = new ScaleMenuItemDecorator(
 				new TextMenuItem(RESTART, resourcesManager.fontMenuItems,
 						"Restart", vbom), 1.2f, 1);
-		btnRestart.setPosition(GameActivity.CAM_WIDTH / 2,
-				(GameActivity.CAM_HEIGHT / 2) + 20 - heightFix - t.getHeight()
-						/ 2);
+		btnRestart.setPosition(
+				GameActivity.CAM_WIDTH / 2,
+				(GameActivity.CAM_HEIGHT / 2) - heightFix
+						- gameOver.getHeight() / 2);
 		btnRestart.setAlpha(0);
 		btnRestart.setVisible(false);
 
@@ -355,7 +356,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 				EXIT, resourcesManager.fontMenuItems, "Exit", vbom), 1.2f, 1);
 		btnExit.setPosition(GameActivity.CAM_WIDTH / 2,
 				(GameActivity.CAM_HEIGHT / 2) - btnExit.getHeight() - heightFix
-						- t.getHeight() / 2);
+						- gameOver.getHeight() / 2);
 		btnExit.setAlpha(0);
 		btnExit.setVisible(false);
 
@@ -367,11 +368,11 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 			protected void onModifierFinished(IEntity pItem) {
 				super.onModifierFinished(pItem);
 				AlphaModifier m = new AlphaModifier(1, 0, 1);
-				t.setVisible(true);
+				gameOver.setVisible(true);
 				scoreText.setVisible(true);
 				btnRestart.setVisible(true);
 				btnExit.setVisible(true);
-				t.registerEntityModifier(m);
+				gameOver.registerEntityModifier(m);
 				btnRestart.registerEntityModifier(m);
 				btnExit.registerEntityModifier(m);
 				scoreText.registerEntityModifier(modifier);
@@ -380,7 +381,7 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		back.registerEntityModifier(m);
 
 		gameOverScene.attachChild(back);
-		gameOverScene.attachChild(t);
+		gameOverScene.attachChild(gameOver);
 		gameOverScene.attachChild(scoreText);
 		gameOverScene.addMenuItem(btnRestart);
 		gameOverScene.addMenuItem(btnExit);
@@ -394,6 +395,51 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 						+ (int) (score / 100));
 		if (prefs.getInt(GameActivity.HIGH_SCORE_KEY, 0) < score)
 			edit.putInt(GameActivity.HIGH_SCORE_KEY, (int) score);
+		edit.commit();
+
+		int exp = prefs.getInt(GameActivity.TOTAL_SCORE_KEY, 0);
+		String unlocksStr = prefs.getString(ArmoryScene.ARRAY_UNLOCK_KEY, "");
+		ArrayList<Integer> al;
+		if (!prefs.contains(ArmoryScene.ARRAY_UNLOCK_KEY)) {
+			Debug.i("No unlock keys");
+			al = new ArrayList<Integer>(ArmoryScene.unlocks);
+		} else {
+			Debug.i("Unlock keys: " + unlocksStr + ". Array values: ");
+			String[] unlocks = unlocksStr.split(",");
+			al = new ArrayList<Integer>(unlocks.length);
+			if (!unlocksStr.isEmpty()) {
+				for (String s : unlocks) {
+					al.add(Integer.parseInt(s));
+					Debug.i(s);
+				}
+			}
+		}
+		int i = al.size() - 1;
+		for (; i >= 0; i--) {
+			if (exp >= al.get(i)) {
+				Debug.i("New weapon available! Exp: " + exp
+						+ ". Weapon value: " + al.get(i));
+				Text newWeapon = new Text(0, 0, resourcesManager.fontMenuItems,
+						"New weapon available!", vbom);
+				newWeapon.setPosition(
+						GameActivity.CAM_WIDTH / 2,
+						GameActivity.CAM_HEIGHT / 2 + 60
+								- scoreText.getHeight());
+				gameOverScene.attachChild(newWeapon);
+				break;
+			}
+		}
+		for (; i >= 0; i--) {
+			al.remove(0);
+		}
+		String save = "";
+		for (i = 0; i < al.size(); i++) {
+			save += al.get(i) + ",";
+		}
+		Debug.i("Save new values: " + save.substring(0, save.length() - 1));
+		edit.putString(ArmoryScene.ARRAY_UNLOCK_KEY,
+				save.substring(0, save.length() - 1));
+
 		edit.apply();
 
 		return gameOverScene;
