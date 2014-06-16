@@ -436,9 +436,11 @@ public class GameScene extends BaseScene implements IUpdateHandler,
 		for (i = 0; i < al.size(); i++) {
 			save += al.get(i) + ",";
 		}
-		Debug.i("Save new values: " + save.substring(0, save.length() - 1));
-		edit.putString(ArmoryScene.ARRAY_UNLOCK_KEY,
-				save.substring(0, save.length() - 1));
+		if (save.length() > 0) {
+			save = save.substring(0, save.length() - 1);
+		}
+		Debug.i("Save new values: " + save);
+		edit.putString(ArmoryScene.ARRAY_UNLOCK_KEY, save);
 
 		edit.apply();
 
